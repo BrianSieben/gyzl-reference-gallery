@@ -5,68 +5,78 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>逛与宙 AI Lab · 参考站图册（板块导航 + 相似度对比）</title>
 <style>
-  :root{--bg:#0a0a0c;--panel:#141418;--line:#26262c;--txt:#ececec;--sub:#9a9aa2;--accent:#c8f04a;--h:calc(100dvh - 235px)}
+  :root{--bg:#0a0a0c;--panel:#141418;--line:#26262c;--txt:#ececec;--sub:#9a9aa2;--accent:#c8f04a}
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{height:100%}
   body{background:var(--bg);color:var(--txt);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;overflow:hidden;display:flex;flex-direction:column}
-  header{padding:14px 20px 8px}
-  h1{font-size:18px}
-  .meta{color:var(--sub);font-size:12px;margin-top:3px}
-  .tabs{display:flex;gap:6px;padding:8px 16px;overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:none;flex:0 0 auto}
+  header{padding:12px 16px 6px;flex:0 0 auto}
+  h1{font-size:17px}
+  .meta{color:var(--sub);font-size:11px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tabs{display:flex;gap:6px;padding:8px 12px;overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:none;flex:0 0 auto}
   .tabs::-webkit-scrollbar{display:none}
-  .tab{flex:0 0 auto;padding:7px 16px;border:1px solid var(--line);border-radius:99px;font-size:13px;color:var(--sub);cursor:pointer;white-space:nowrap}
+  .tab{flex:0 0 auto;padding:7px 15px;border:1px solid var(--line);border-radius:99px;font-size:13px;color:var(--sub);cursor:pointer;white-space:nowrap}
   .tab.on{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600}
 
-  .main{flex:1;display:flex;min-height:0}
-  /* sidebar */
-  #side{flex:0 0 270px;border-right:1px solid var(--line);overflow-y:auto;padding:12px 12px 20px}
-  .grp{font-size:12px;color:var(--wire2,#55555f);margin:12px 4px 6px;font-weight:600}
-  .blk{display:block;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px;cursor:pointer;color:var(--txt);font-size:12px;line-height:1.5}
+  /* 板块导航：桌面=左侧栏，手机=横滑芯片 */
+  #side{flex:0 0 264px;border-right:1px solid var(--line);overflow-y:auto;padding:12px 12px 20px}
+  .grp{font-size:12px;color:#55555f;margin:12px 4px 6px;font-weight:600}
+  .blk{display:block;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px;cursor:pointer;color:var(--txt);font-size:12px;line-height:1.5;font-family:inherit}
   .blk small{display:block;color:var(--sub);font-size:11px;margin-top:2px}
   .blk.on{border-color:var(--accent)}
   .blk .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:5px}
-  /* strip */
-  .strip-wrap{flex:1;display:flex;align-items:center;min-width:0}
-  .strip{display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;padding:8px 20px 14px;height:100%;align-items:center;scrollbar-width:none;width:100%}
-  .strip::-webkit-scrollbar{display:none}
-  .frame{flex:0 0 auto;scroll-snap-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}
-  .frame a{display:block;width:250px;height:var(--h);overflow-y:auto;overflow-x:hidden;border:1px solid var(--line);border-radius:12px;background:#000;line-height:0;box-shadow:0 8px 30px rgba(0,0,0,.5)}
-  .frame img{width:100%;height:auto;display:block}
-  .cap{font-size:12px;color:var(--sub)}
-  .cap b{color:var(--accent)}
-  .arrow{position:fixed;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:rgba(20,20,24,.85);color:var(--txt);font-size:15px;cursor:pointer;display:flex;justify-content:center;align-items:center;z-index:5}
-  .arrow:hover{border-color:var(--accent);color:var(--accent)}
-  #prev{right:auto;left:290px}#next{right:10px}
-  .count{position:fixed;right:16px;bottom:10px;font-size:12px;color:var(--sub)}
-  .count b{color:var(--accent)}
 
-  /* similarity view */
-  #sim{flex:1;overflow-y:auto;padding:16px 22px 30px;display:none}
+  .main{flex:1;display:flex;min-height:0}
+  .strip-wrap{flex:1;display:flex;min-width:0}
+  .strip{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 14px 12px;height:100%;width:100%;scrollbar-width:none;touch-action:pan-x}
+  .strip::-webkit-scrollbar{display:none}
+  .frame{flex:0 0 auto;scroll-snap-align:center;display:flex;flex-direction:column;width:min(76vw,330px);height:100%}
+  .frame a{flex:1;min-height:0;display:block;width:100%;overflow-y:auto;overflow-x:hidden;border:1px solid var(--line);border-radius:14px;background:#000;line-height:0;box-shadow:0 8px 30px rgba(0,0,0,.5);touch-action:pan-y}
+  .frame img{width:100%;height:auto;display:block}
+  .cap{font-size:12px;color:var(--sub);text-align:center;padding-top:8px;flex:0 0 auto}
+  .cap b{color:var(--accent)}
+
+  .arrow{display:none;position:fixed;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:rgba(20,20,24,.85);color:var(--txt);font-size:15px;cursor:pointer;justify-content:center;align-items:center;z-index:5}
+  #prev{left:280px}#next{right:12px}
+
+  /* 手机底部翻页栏 */
+  #navbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:rgba(10,10,12,.95);flex:0 0 auto}
+  #navbar button{width:52px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--txt);font-size:17px;cursor:pointer}
+  #navbar button:active{border-color:var(--accent);color:var(--accent)}
+  #count{font-size:13px;color:var(--sub)}
+  #count b{color:var(--accent);font-size:16px}
+
+  /* 相似度视图 */
+  #sim{flex:1;overflow-y:auto;padding:14px 16px 30px;display:none;-webkit-overflow-scrolling:touch}
   .simcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
   .simcard .hd{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
   .simcard .rank{font-size:12px;color:var(--sub)}
   .simcard .rank b{font-size:22px;color:var(--accent)}
   .bar{height:6px;border-radius:99px;background:var(--line);margin-top:8px;overflow:hidden}
   .bar i{display:block;height:100%;border-radius:99px}
-  .b1{background:var(--accent)}.b2{background:#7a7a85}
+  .b1{background:var(--accent)}
   .legend2{display:flex;gap:16px;font-size:11px;color:var(--sub);margin-top:6px}
   .legend2 i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px}
   table{width:100%;border-collapse:collapse;font-size:12px;color:var(--sub);margin-top:10px}
   td,th{border:1px solid var(--line);padding:5px 6px;text-align:center}
   th{color:var(--txt);background:#191920}
   td.y{color:var(--accent)}td.n{color:#5a5a64}td.m{color:#c9c25a}
-  .vtxt{font-size:12px;color:var(--sub);margin-top:8px}
+  .vtxt{font-size:12px;color:var(--sub);margin-top:8px;line-height:1.6}
   .vtxt b{color:var(--txt)}
 
-  @media(min-width:900px){.frame a{width:315px}#prev{left:300px}}
-  @media(max-width:760px){
-    .main{flex-direction:column}
-    #side{flex:0 0 auto;border-right:none;border-bottom:1px solid var(--line);display:flex;gap:6px;overflow-x:auto;padding:8px 12px;scrollbar-width:none}
-    #side::-webkit-scrollbar{display:none}
-    .grp{display:none}
-    .blk{flex:0 0 auto;width:auto;white-space:nowrap;margin-bottom:0;padding:6px 10px}
-    .blk small{display:none}
-    #prev{left:10px}
+  /* 信息条：手机默认收起两行，点一下展开 */
+  .infobar{flex:0 0 auto;padding:6px 16px 4px;font-size:12px;color:var(--sub);line-height:1.55;border-bottom:1px solid var(--line)}
+  .infobar b{color:var(--txt)}
+  .infobar .full{display:none}
+  .infobar.open .full{display:inline}
+  .infobar .tip{color:#55555f;font-size:11px}
+
+  @media(min-width:900px){
+    h1{font-size:20px}.meta{font-size:12px}
+    .frame{width:330px}
+    #prev,#next{display:flex}
+    #navbar{display:none}
+    .arrow{display:flex!important}
+    #sim{padding:20px 26px 40px}
   }
 </style>
 </head>
@@ -74,10 +84,11 @@
 
 <header>
   <h1>逛与宙 AI Lab · 参考站图册</h1>
-  <div class="meta">左侧/上方 = 板块导航，点按钮直接跳到该区块 · 最后一个 Tab = 与我们目标区块的相似度排名 · ← → 翻图 · 点图看原尺寸</div>
+  <div class="meta">板块导航点哪跳哪 · 最后一个 Tab 是相似度排名 · 点图看原尺寸</div>
 </header>
 
 <nav class="tabs" id="tabs"></nav>
+<div class="infobar" id="infobar" onclick="this.classList.toggle('open')"><span id="info"></span> <span class="tip">｜点我展开/收起说明</span></div>
 <div class="main">
   <aside id="side"></aside>
   <div class="strip-wrap" id="wrap">
@@ -87,10 +98,13 @@
 </div>
 <button class="arrow" id="prev">‹</button>
 <button class="arrow" id="next">›</button>
-<div class="count" id="count"></div>
+<div id="navbar">
+  <button id="nprev">‹</button>
+  <span id="count">–</span>
+  <button id="nnext">›</button>
+</div>
 
 <script>
-/* ===== 我们的目标区块（相似度比对基准） ===== */
 var OUR_BLOCKS=["B1 大字宣言首屏","B2 业务分类展示","B3 精选案例陈列","B4 信任背书","B5 联系 CTA","B6 作品列表页","B7 案例详情页","B8 关于/能力页"];
 
 var SITES=[
@@ -190,10 +204,10 @@ var SITES=[
 {name:"相似度对比",sim:true}
 ];
 
-/* ===== 渲染 ===== */
 var tabs=document.getElementById('tabs'),side=document.getElementById('side'),
     strip=document.getElementById('strip'),sim=document.getElementById('sim'),
-    wrap=document.getElementById('wrap'),count=document.getElementById('count');
+    wrap=document.getElementById('wrap'),count=document.getElementById('count'),
+    info=document.getElementById('info');
 var cur=0;
 
 SITES.forEach(function(s,i){
@@ -205,61 +219,60 @@ function calc(s){
   if(!s.match)return null;
   var score=0;s.match.forEach(function(v){score+= v==="✓"?1: v==="~"?0.5:0});
   var blk=Math.round(score/8*100);
-  var all=Math.round(blk*0.7+s.tex*0.3);
-  return {blk:blk,tex:s.tex,all:all};
+  return {blk:blk,tex:s.tex,all:Math.round(blk*0.7+s.tex*0.3)};
 }
 
 function show(i){
   cur=i;var s=SITES[i];
   Array.prototype.forEach.call(tabs.children,function(t,j){t.classList.toggle('on',j===i)});
   side.innerHTML='';strip.innerHTML='';sim.style.display='none';
-  if(s.sim){wrap.style.display='none';side.innerHTML='';renderSim();return}
-  wrap.style.display='';sim.style.display='none';
+  if(s.sim){wrap.style.display='none';side.style.display='none';renderSim();return}
+  wrap.style.display='';side.style.display='';
+  info.innerHTML='<b>'+s.name+'</b> · '+s.sub;
   s.shots.forEach(function(sh,si){
     var f=document.createElement('div');f.className='frame';
     f.innerHTML='<a href="'+sh.img+'" target="_blank"><img src="'+sh.img+'" loading="lazy"></a><div class="cap"><b>●</b> '+sh.cap+'</div>';
     strip.appendChild(f);
-    // sidebar group
     var g=document.createElement('div');g.className='grp';g.textContent=sh.cap;side.appendChild(g);
-    sh.blocks.forEach(function(b,bi){
+    sh.blocks.forEach(function(b){
       var btn=document.createElement('button');btn.className='blk';
       btn.innerHTML='<span class="dot"></span>'+b[1]+'<small>'+b[2]+'</small>';
       btn.onclick=function(){jump(si,b[0],btn)};
-      btn.dataset.si=si;btn.dataset.y=b[0];
       side.appendChild(btn);
     });
   });
-  strip.scrollLeft=0;
-  count.innerHTML=SITES[i].shots.length?('<b>1</b> / '+SITES[i].shots.length):'';
+  strip.scrollLeft=0;updCount();
 }
 
 function jump(si,y,btn){
   var frames=strip.querySelectorAll('.frame');var a=frames[si]&&frames[si].querySelector('a');if(!a)return;
   frames[si].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
-  var target=Math.max(0,y*a.scrollHeight-a.clientHeight*0.25);
-  a.scrollTo({top:target,behavior:'smooth'});
+  a.scrollTo({top:Math.max(0,y*a.scrollHeight-a.clientHeight*0.25),behavior:'smooth'});
   Array.prototype.forEach.call(side.querySelectorAll('.blk'),function(b){b.classList.remove('on')});
   if(btn)btn.classList.add('on');
 }
 
-/* scrollspy: frame 滚动时高亮当前板块 */
-strip.addEventListener('scroll',function(){
-  count.innerHTML='<b>'+(Math.round(strip.scrollLeft/(strip.scrollWidth/SITES[cur].shots.length))+1)+'</b> / '+SITES[cur].shots.length;
-});
-document.getElementById('strip').addEventListener('scroll',function(){},true);
+function updCount(){
+  var n=SITES[cur].shots?SITES[cur].shots.length:0;
+  var w=strip.querySelector('.frame');
+  var idx=w?Math.min(n,Math.max(1,Math.round(strip.scrollLeft/(w.offsetWidth+16))+1)):0;
+  count.innerHTML=n?('<b>'+idx+'</b> / '+n):'–';
+}
+strip.addEventListener('scroll',updCount);
 
 function renderSim(){
   sim.style.display='block';
+  info.innerHTML='<b>相似度对比</b> · 与咱们方案的目标区块逐站比对';
   var rows=SITES.filter(function(s){return s.match});
   rows.forEach(function(s){s._c=calc(s)});
   rows.sort(function(a,b){return b._c.all-a._c.all});
-  var html='<div style="font-size:13px;color:var(--sub);margin-bottom:12px">比对基准 = 咱们方案的目标区块（B1-B8）。<b style="color:var(--txt)">相似度 = 区块匹配 × 70% + 质感匹配 × 30%</b>，✓ 完全具备 · ~ 部分具备 · ✗ 没有。</div>';
+  var html='<div style="font-size:12px;color:var(--sub);margin-bottom:12px;line-height:1.6">比对基准 = 咱们方案的目标区块（B1-B8）。<b style="color:var(--txt)">相似度 = 区块匹配 × 70% + 质感匹配 × 30%</b>，✓ 完全具备 · ~ 部分具备 · ✗ 没有。</div>';
   rows.forEach(function(s,idx){
     var c=s._c;
     html+='<div class="simcard"><div class="hd"><div><b>'+(idx+1)+'. '+s.name+'</b><div class="vtxt">'+s.verdict+'</div></div>'
       +'<div class="rank">综合 <b>'+c.all+'</b><span style="font-size:11px"> / 区块 '+c.blk+' · 质感 '+c.tex+'</span></div></div>'
       +'<div class="bar"><i class="b1" style="width:'+c.all+'%"></i></div>'
-      +'<div class="legend2"><span><i style="background:var(--accent)"></i>综合相似度 '+c.all+'%</span><span><i style="background:#7a7a85"></i>区块 '+c.blk+'% · 质感 '+c.tex+'%</span></div></div>';
+      +'<div class="legend2"><span><i style="background:var(--accent)"></i>综合 '+c.all+'%</span><span><i style="background:#7a7a85"></i>区块 '+c.blk+'% · 质感 '+c.tex+'%</span></div></div>';
   });
   html+='<div class="simcard"><div class="hd"><b>区块对照矩阵</b></div><table><tr><th style="text-align:left">目标区块</th>';
   rows.forEach(function(s){html+='<th>'+s.name.split(' ')[0]+'</th>'});
@@ -276,11 +289,14 @@ function renderSim(){
   sim.innerHTML=html;
 }
 
-document.getElementById('prev').onclick=function(){var w=strip.querySelector('.frame');if(w)strip.scrollBy({left:-(w.offsetWidth+22),behavior:'smooth'})};
-document.getElementById('next').onclick=function(){var w=strip.querySelector('.frame');if(w)strip.scrollBy({left:(w.offsetWidth+22),behavior:'smooth'})};
+function go(d){var w=strip.querySelector('.frame');if(w)strip.scrollBy({left:d*(w.offsetWidth+16),behavior:'smooth'})}
+document.getElementById('prev').onclick=function(){go(-1)};
+document.getElementById('next').onclick=function(){go(1)};
+document.getElementById('nprev').onclick=function(){go(-1)};
+document.getElementById('nnext').onclick=function(){go(1)};
 document.addEventListener('keydown',function(e){
-  if(e.key==='ArrowRight')document.getElementById('next').click();
-  if(e.key==='ArrowLeft')document.getElementById('prev').click();
+  if(e.key==='ArrowRight')go(1);
+  if(e.key==='ArrowLeft')go(-1);
 });
 show(0);
 </script>
