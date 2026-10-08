@@ -25,7 +25,7 @@ body{background:var(--bg);color:var(--txt);font-family:var(--f);padding-top:118p
 .vp button.on{background:var(--gold);color:#170f00;font-weight:600}
 
 /* ===== 画布 ===== */
-#canvas{width:100%;margin:0 auto;transition:max-width .3s}
+#canvas{width:100%;margin:0 auto;transition:max-width .3s;container-type:inline-size}
 #canvas.desk{max-width:1600px}
 #canvas.mob{max-width:390px;border-left:1px solid var(--line);border-right:1px solid var(--line)}
 .page{display:none}
@@ -54,8 +54,8 @@ body{background:var(--bg);color:var(--txt);font-family:var(--f);padding-top:118p
 /* ===== 文本条 ===== */
 .tb{height:10px;border-radius:2px;background:var(--wire);margin:7px 0;position:relative}
 .light .tb{background:#8fa3ab}
-.tb.micro{height:5px;width:110px;background:var(--mut)}
-.tb.cap{height:6px;width:150px;background:var(--mut)}
+.tb.micro{height:5px;width:110px;max-width:100%;background:var(--mut)}
+.tb.cap{height:6px;width:150px;max-width:100%;background:var(--mut)}
 .tb.h1{height:26px;width:72%}
 .tb.h1.s{height:26px;width:54%}
 .tb.h2{height:20px;width:48%}
@@ -127,6 +127,20 @@ body{background:var(--bg);color:var(--txt);font-family:var(--f);padding-top:118p
   .row2{gap:18px}
   .hero{height:80vh}
 }
+/* ===== 画布内自适应：📱390 预览与真手机都走这里 ===== */
+@container (max-width:760px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .footgrid{grid-template-columns:repeat(2,1fr)}
+  .row2{gap:18px}
+  .hero{height:80vh}
+  .rail{overflow-x:auto;scroll-snap-type:x mandatory}
+  .rail::-webkit-scrollbar{display:none}
+  .rcard{flex:0 0 46%;scroll-snap-align:start}
+  .chips{flex-wrap:nowrap;overflow-x:auto}
+  .inner{padding:26px 18px}
+}
+.grid>*{min-width:0}
+.footgrid>*{min-width:0}
 </style>
 </head>
 <body>
