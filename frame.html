@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evolve 复刻 · 框架线稿（4 Tab）</title>
+<style>
+:root{
+  --bg:#0d1113; --panel:#131a1e; --line:#2a363c; --dash:#3a4a52;
+  --txt:#ccd8dd; --mut:#71858e; --gold:#9f8552; --wire:#55676f;
+  --f:"Helvetica Neue",Helvetica,Arial,"PingFang SC","Microsoft YaHei",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--txt);font-family:var(--f);padding-top:118px}
+
+/* ===== 顶部控制区 ===== */
+#ctrl{position:fixed;top:0;left:0;right:0;z-index:99;background:#0a0e10;border-bottom:1px solid var(--line);padding:12px 18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+#ctrl .t{font-size:14px;font-weight:600;letter-spacing:.05em}
+#ctrl .t small{display:block;font-size:11px;color:var(--mut);font-weight:400;margin-top:2px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{background:transparent;border:1px solid var(--line);color:var(--mut);border-radius:999px;padding:8px 18px;font-size:13px;cursor:pointer}
+.tabs button.on{border-color:var(--gold);color:var(--gold)}
+.vp{margin-left:auto;display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.vp button{background:transparent;border:none;color:var(--mut);padding:8px 16px;font-size:12.5px;cursor:pointer}
+.vp button.on{background:var(--gold);color:#170f00;font-weight:600}
+
+/* ===== 画布 ===== */
+#canvas{width:100%;margin:0 auto;transition:max-width .3s}
+#canvas.desk{max-width:1600px}
+#canvas.mob{max-width:390px;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.page{display:none}
+.page.on{display:block}
+
+/* ===== 线稿图例 ===== */
+.legend{margin:18px;padding:14px 16px;border:1px dashed var(--dash);border-radius:8px;font-size:12px;color:var(--mut);display:flex;flex-wrap:wrap;gap:8px 22px;line-height:1.7}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.sw{border:1.5px solid var(--wire);background:transparent}
+.swf{border:1.5px solid var(--wire);background:rgba(85,103,111,.12)}
+.swmedia{border:1.5px dashed var(--dash);background:repeating-linear-gradient(45deg,rgba(85,103,111,.08) 0 8px,transparent 8px 16px)}
+.swtxt{background:var(--wire);border:none;height:8px!important;border-radius:2px}
+
+/* ===== 区块通用 ===== */
+.blk{border:1.5px solid var(--wire);margin:0 0 14px;position:relative;background:var(--panel)}
+.blk .tag{position:absolute;top:-11px;left:14px;background:var(--bg);border:1px solid var(--gold);color:var(--gold);font-size:11.5px;font-weight:600;padding:2px 10px;border-radius:4px;white-space:nowrap;z-index:3}
+.blk .tag em{font-style:normal;color:var(--mut);font-weight:400;margin-left:8px}
+.blk .corner{position:absolute;top:6px;right:10px;font-size:10.5px;color:var(--mut);text-align:right;line-height:1.6;z-index:3}
+.blk.light{background:#e8eef1;border-color:#b8c6cc}
+.blk.light .tag{background:#e8eef1}
+.blk.light .corner{color:#5c6f77}
+.inner{padding:34px 26px}
+.gutmark{position:absolute;top:0;bottom:0;width:0;border-left:1px dashed rgba(159,133,82,.35);z-index:2;font-size:0}
+.gutmark span{position:absolute;top:4px;left:3px;font-size:9.5px;color:rgba(159,133,82,.8);letter-spacing:.05em}
+
+/* ===== 文本条 ===== */
+.tb{height:10px;border-radius:2px;background:var(--wire);margin:7px 0;position:relative}
+.light .tb{background:#8fa3ab}
+.tb.micro{height:5px;width:110px;background:var(--mut)}
+.tb.cap{height:6px;width:150px;background:var(--mut)}
+.tb.h1{height:26px;width:72%}
+.tb.h1.s{height:26px;width:54%}
+.tb.h2{height:20px;width:48%}
+.tb.h3{height:15px;width:34%}
+.tb.p{height:8px;width:100%}
+.tb.p.w80{width:80%}.tb.p.w60{width:60%}.tb.p.w40{width:40%}
+.light .tb.micro,.light .tb.cap{background:#7c919a}
+.spec{font-size:10.5px;color:var(--mut);margin:2px 0 10px;letter-spacing:.03em}
+.light .spec{color:#5c6f77}
+.row2{display:flex;gap:26px;align-items:flex-start;flex-wrap:wrap}
+.col{flex:1;min-width:220px}
+
+/* ===== 媒体占位 ===== */
+.media{border:1.5px dashed var(--dash);background:repeating-linear-gradient(45deg,rgba(85,103,111,.08) 0 10px,transparent 10px 20px);display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:11px;letter-spacing:.1em;position:relative}
+.media .lbl{position:absolute;bottom:6px;right:8px;font-size:10px;color:var(--gold)}
+.m169{aspect-ratio:16/9}.m34{aspect-ratio:3/4}.m11{aspect-ratio:1/1}.mf{height:100%;min-height:420px}
+
+/* ===== 按钮 ===== */
+.btn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--txt);color:var(--txt);border-radius:999px;padding:12px 26px;font-size:12px;letter-spacing:.1em;position:relative;margin:6px 8px 6px 0}
+.btn .d{width:14px;height:14px;border:1.2px solid var(--txt);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:8px}
+.btn.dark{border-color:#465255;color:#465255}
+.btn .bs{position:absolute;top:-9px;right:8px;background:var(--bg);padding:0 6px;font-size:9.5px;color:var(--gold);letter-spacing:.05em;white-space:nowrap}
+.light .btn .bs{background:#e8eef1}
+
+/* ===== 首屏框架 ===== */
+.hero{height:92vh;min-height:560px;display:flex;flex-direction:column;justify-content:space-between}
+.hero .top{display:flex;justify-content:space-between;align-items:center;padding:18px 26px}
+.hero .bottom{padding:0 26px 40px;max-width:820px}
+.hero .burger{width:46px;height:46px;border:1.5px solid var(--txt);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.hero .burger i{display:block;width:16px;height:1.5px;background:var(--txt)}
+.logo{font-size:17px;font-weight:700}
+.logo em{font-style:normal;font-weight:300}
+
+/* ===== 轮播 ===== */
+.rail{display:flex;gap:14px;overflow:hidden;padding:6px 0}
+.rcard{flex:1;min-width:0}
+.rcard .m34{margin-bottom:10px}
+
+/* ===== logo 墙 ===== */
+.logorow{display:flex;gap:26px;align-items:center;flex-wrap:wrap;justify-content:center}
+.logorow .lg{width:84px;height:22px;border-radius:2px;background:var(--wire);opacity:.5}
+
+/* ===== 奖项 ===== */
+.awrow{display:flex;align-items:center;gap:20px;padding:16px 4px;border-bottom:1px solid var(--line)}
+.awrow .n{width:130px;flex:none}
+.awrow .t{flex:1}
+.awrow .n .tb{height:22px}
+
+/* ===== 网格卡片 ===== */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 20px}
+.chip{border:1.2px solid var(--mut);color:var(--mut);border-radius:999px;padding:7px 15px;font-size:11px;letter-spacing:.04em}
+.chip.on{border-color:var(--gold);color:var(--gold)}
+
+/* ===== 表单 ===== */
+.fld{margin-bottom:20px}
+.fld label{font-size:10.5px;letter-spacing:.2em;color:var(--mut);display:block;margin-bottom:7px;text-transform:uppercase}
+.fld .ln{height:1px;background:var(--line);position:relative}
+.fld .ln::after{content:"";position:absolute;left:0;right:30%;top:-1px;height:2px;background:var(--mut);border-radius:2px}
+
+.footgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.footgrid .fk{font-size:10px;letter-spacing:.22em;color:var(--mut);margin-bottom:10px;text-transform:uppercase}
+.footgrid .fl{display:flex;flex-direction:column;gap:7px}
+.footgrid .fl i{display:block;height:7px;border-radius:2px;background:var(--wire);width:70%}
+
+@media(max-width:760px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .footgrid{grid-template-columns:repeat(2,1fr)}
+  .row2{gap:18px}
+  .hero{height:80vh}
+}
+</style>
+</head>
+<body>
+
+<div id="ctrl">
+  <div class="t">Evolve 复刻 · 框架线稿<small>只标板块 / 按钮 / 文本位置与规格 · 不含真实内容 · 桌面 L2 · 移动 L1</small></div>
+  <div class="tabs">
+    <button class="on" onclick="show(0,this)">① 首页</button>
+    <button onclick="show(1,this)">② 作品列表</button>
+    <button onclick="show(2,this)">③ 案例详情</button>
+    <button onclick="show(3,this)">④ 联系</button>
+  </div>
+  <div class="vp">
+    <button class="on" onclick="vp('desk',this)">🖥 桌面 1600</button>
+    <button onclick="vp('mob',this)">📱 手机 390</button>
+  </div>
+</div>
+
+<div class="legend">
+  <span><i class="sw"></i>内容区块</span>
+  <span><i class="swf"></i>浅色反差区</span>
+  <span><i class="swmedia"></i>媒体占位（视频/图）</span>
+  <span><i class="swtxt"></i>文本条（右侧标注=字级/行高/字距）</span>
+  <span style="color:var(--gold)">■ 金色=按钮或重点标注</span>
+  <span>根字号 fluid：4.26667vw 封顶 18px → 所有 rem 随屏等比缩放</span>
+</div>
+
+<div id="canvas" class="desk">
+
+<!-- ================= TAB 1 首页 ================= -->
+<section class="page on">
+
+  <div class="blk" style="margin-top:8px">
+    <div class="tag">S1 · HERO 首屏<em>100vh · 视频满铺 · 内容贴底左对齐</em></div>
+    <div class="corner">🖥L2 视频随滚动缩放<br>📱L1 固定视频+淡入</div>
+    <div class="hero">
+      <div class="top">
+        <div class="logo">evolve<em>studios</em>. <span class="spec" style="display:inline">LOGO · 17px</span></div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <span class="spec">顶栏 fixed · blend-difference 反色</span>
+          <div class="burger"><i></i><i></i></div>
+        </div>
+      </div>
+      <div class="media mf" style="position:absolute;inset:0;z-index:0"><span style="z-index:2">背景视频 LOOP</span><span class="lbl">MP4 · muted · cover</span></div>
+      <div class="bottom" style="position:relative;z-index:2">
+        <div class="tb h1"></div><div class="tb h1 s"></div>
+        <div class="spec">H1 · Helvetica Now 325 · 64px(fluid)→ / 行高 .875 / 字距 -.04em / 全小写 · 2行</div>
+        <div class="tb p w80"></div><div class="tb p w60"></div>
+        <div class="spec">正文 · 16px / 1.35 ·  max-width 560 · 段内加粗关键词</div>
+        <div class="btn"><span class="d">▶</span>PLAY REEL<span class="bs">PILL · 14px · 字距 .08em · φ描边</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">S2 · 客户 LOGO 墙<em>12 个 · 灰度 · 不滚动</em></div>
+    <div class="corner">信任状一次给足</div>
+    <div class="inner">
+      <div class="tb micro" style="margin:0 auto 22px"></div>
+      <div class="spec" style="text-align:center">eyebrow · 10px · 字距 .28em · 居中</div>
+      <div class="logorow"><div class="lg"></div><div class="lg"></div><div class="lg"></div><div class="lg"></div><div class="lg"></div><div class="lg"></div><div class="lg"></div><div class="lg"></div></div>
+      <div class="spec" style="text-align:center;margin-top:14px">logo 高 22px · gap 34px · opacity .55</div>
+    </div>
+  </div>
+
+  <div class="blk light">
+    <div class="tag">S3 · 一句话定位区<em>全站唯一浅底「换气」区</em></div>
+    <div class="corner">段距上 120px 下 120px</div>
+    <div class="inner">
+      <div class="tb h2" style="width:60%"></div><div class="tb h2" style="width:44%"></div>
+      <div class="spec">声明级 H2 · 88px→ / .818 / -.045em · 其中一词加粗(500)</div>
+      <div class="tb p w60" style="margin-top:26px"></div>
+      <div class="spec">正文 16px · max-width 640</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">S4 · 业务①作品轮播<em>production + post</em></div>
+    <div class="corner">🖥L2 拖拽+惯性<br>📱L1 原生横滑</div>
+    <div class="inner">
+      <div class="tb micro"></div>
+      <div class="spec">计数 · 12px · 金色 · 字距 .2em ——「29 CASES」数量即信任</div>
+      <div class="tb h2" style="width:52%"></div><div class="tb h2" style="width:36%"></div>
+      <div class="spec">区块 H2 · 88px→ / .818 / -.045em</div>
+      <div class="tb p w60"></div>
+      <div class="spec">说明 16px · max-width 560</div>
+      <div class="btn">VIEW OUR WORK →<span class="bs">PILL 描边 · hover 填充</span></div>
+      <div style="height:24px"></div>
+      <div class="rail">
+        <div class="rcard"><div class="media m34">3:4 封面<span class="lbl">hover 图放大1.05</span></div><div class="tb" style="width:88%"></div><div class="spec">卡题 15px/400 · 客户 12px · 字距 .06em</div></div>
+        <div class="rcard"><div class="media m34">3:4 封面</div><div class="tb" style="width:70%"></div><div class="tb cap"></div></div>
+        <div class="rcard"><div class="media m34">3:4 封面</div><div class="tb" style="width:76%"></div><div class="tb cap"></div></div>
+        <div class="rcard"><div class="media m34">3:4 封面</div><div class="tb" style="width:60%"></div><div class="tb cap"></div></div>
+      </div>
+      <div class="spec">横滑卡 · flex gap 14 · 卡宽 ≤300 · snap 对齐 · 整卡可点→详情</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">S5 · 业务②作品轮播<em>original TV &amp; film · 结构完全复用 S4</em></div>
+    <div class="inner">
+      <div class="tb micro"></div>
+      <div class="tb h2" style="width:40%"></div>
+      <div class="tb p w60"></div>
+      <div style="height:20px"></div>
+      <div class="rail">
+        <div class="rcard"><div class="media m34">3:4 封面</div><div class="tb" style="width:80%"></div></div>
+        <div class="rcard"><div class="media m34">3:4 封面</div><div class="tb" style="width:64%"></div></div>
+        <div class="rcard"><div class="media m34">3:4 封面</div><div class="tb" style="width:72%"></div></div>
+        <div class="rcard"><div class="media m34">3:4 封面</div><div class="tb" style="width:58%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">S6 · 理念长文 our ethos<em>全站唯一「讲道理」处</em></div>
+    <div class="inner">
+      <div class="tb micro"></div>
+      <div class="spec">eyebrow · 金色 · 字距 .26em</div>
+      <div class="tb h2" style="width:36%"></div>
+      <div class="spec">H2 · 72px→ · 带句点「our ethos.」</div>
+      <div class="tb p w80"></div><div class="tb p w60"></div>
+      <div class="spec">长文 16px · max-width 640</div>
+      <div class="media m169" style="margin-top:30px">16:9 配图<span class="lbl">圆角 4</span></div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">S7 · 服务能力四联<em>01-04 编号 · 每联=视频+标题+一段</em></div>
+    <div class="corner" style="max-width:280px">🖥L2 滚动钉住：370vh 内视频逐联切换<br>📱L1 纵向堆叠（原站手机端同款降级）</div>
+    <div class="inner" style="padding:0">
+      <div style="border-bottom:1px solid var(--line);padding:30px 26px;position:relative">
+        <div class="media m169">视频区 · cover 50%<span class="lbl">arri.mp4</span></div>
+        <div style="height:16px"></div>
+        <div class="tb micro"></div><div class="spec">编号 01 · 12px · 金色 · 字距 .24em</div>
+        <div class="tb h3"></div><div class="spec">H3 · 56px→ / .9</div>
+        <div class="tb p w80"></div><div class="spec">说明 14.5px · max-width 600</div>
+      </div>
+      <div style="border-bottom:1px solid var(--line);padding:30px 26px;position:relative">
+        <div class="media m169">视频区<span class="lbl">filmstrips.mp4</span></div>
+        <div style="height:16px"></div>
+        <div class="tb micro"></div><div class="tb h3" style="width:56%"></div>
+        <div class="tb p w80"></div>
+        <div class="spec">02 · editorial &amp; post house</div>
+      </div>
+      <div style="border-bottom:1px solid var(--line);padding:30px 26px;position:relative">
+        <div class="media m169">视频区<span class="lbl">lightbulb.mp4</span></div>
+        <div style="height:16px"></div>
+        <div class="tb micro"></div><div class="tb h3" style="width:48%"></div>
+        <div class="tb p w80"></div>
+        <div class="spec">03 · creative development</div>
+      </div>
+      <div style="padding:30px 26px;position:relative">
+        <div class="media m169">视频区<span class="lbl">mac.mp4</span></div>
+        <div style="height:16px"></div>
+        <div class="tb micro"></div><div class="tb h3" style="width:44%"></div>
+        <div class="tb p w80"></div>
+        <div class="spec">04 · footage licensing</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="blk light">
+    <div class="tag">S8 · 品牌态度宣言<em>居中 · 注册商标符号</em></div>
+    <div class="corner">🖥L2 marquee 无缝循环<br>📱L1 静态两行</div>
+    <div class="inner" style="text-align:center">
+      <div class="tb h2" style="width:56%;margin-left:auto;margin-right:auto"></div>
+      <div class="tb h2" style="width:44%;margin-left:auto;margin-right:auto"></div>
+      <div class="spec">居中 H2 · 80px→ · 句尾 ® 上标 .4em</div>
+      <div class="tb p w60" style="margin:22px auto 0"></div>
+      <div class="spec">正文 · max-width 620</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">S9 · 奖项数字<em>5 行 · 数量即信任状</em></div>
+    <div class="corner">🖥L2 滚动计数动画<br>📱L1 静态</div>
+    <div class="inner">
+      <div class="tb cap" style="margin:0 auto 26px"></div>
+      <div class="spec" style="text-align:center">cap · 11px · 字距 .28em · 居中</div>
+      <div class="awrow"><div class="n"><div class="tb"></div></div><div class="t"><div class="tb" style="width:34%"></div></div><div class="spec">数字 64px 细 + 标签 15px · 行底 1px 线</div></div>
+      <div class="awrow"><div class="n"><div class="tb" style="width:70%"></div></div><div class="t"><div class="tb" style="width:28%"></div></div></div>
+      <div class="awrow"><div class="n"><div class="tb" style="width:70%"></div></div><div class="t"><div class="tb" style="width:24%"></div></div></div>
+      <div class="awrow"><div class="n"><div class="tb" style="width:70%"></div></div><div class="t"><div class="tb" style="width:38%"></div></div></div>
+      <div class="awrow"><div class="n"><div class="tb"></div></div><div class="t"><div class="tb" style="width:26%"></div></div></div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">S10 · 团队入口 our artists<em>左文右图 2 列</em></div>
+    <div class="inner">
+      <div class="row2">
+        <div class="col">
+          <div class="tb h2" style="width:52%"></div>
+          <div class="spec">H2 · 64px→</div>
+          <div class="tb cap"></div>
+          <div class="spec">tagline · 13px · 金色</div>
+          <div class="tb p w80"></div><div class="tb p w60"></div>
+          <div class="spec">正文 · max-width 560</div>
+        </div>
+        <div class="col" style="max-width:420px"><div class="media m34">3:4 团队照<span class="lbl">圆角 4</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">S11 · 履历背书 secret sauce<em>氛围底图 28%</em></div>
+    <div class="inner">
+      <div class="media m169" style="margin-bottom:24px">通栏氛围图</div>
+      <div class="tb h2" style="width:44%"></div>
+      <div class="spec">H2 · 72px→ · 带句点</div>
+      <div class="tb p w80"></div><div class="tb p w40"></div>
+      <div class="spec">正文 · max-width 620</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">S12 · 结尾 CTA<em>满屏氛围图 40% · 内容居中</em></div>
+    <div class="inner" style="text-align:center;padding:80px 26px">
+      <div class="media m169" style="margin-bottom:26px">通栏氛围图</div>
+      <div class="tb h2" style="width:48%;margin:0 auto"></div>
+      <div class="spec" style="text-align:center">H2 · 88px→ · 口语化「Let's cook.」</div>
+      <div class="tb cap" style="margin:16px auto"></div>
+      <div class="btn">TALK TO A PRODUCER<span class="bs">→ 联系页</span></div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">F1 · 页脚<em>4 列导航 + 联系信息</em></div>
+    <div class="corner">信息密度最高区</div>
+    <div class="inner">
+      <div class="footgrid">
+        <div><div class="fk">Studio</div><div class="fl"><i></i><i style="width:56%"></i><i style="width:64%"></i></div></div>
+        <div><div class="fk">Film</div><div class="fl"><i style="width:48%"></i><i style="width:60%"></i><i style="width:72%"></i></div></div>
+        <div><div class="fk">Company</div><div class="fl"><i style="width:64%"></i><i style="width:44%"></i></div></div>
+        <div><div class="fk">Connect</div><div class="fl"><i style="width:52%"></i><i style="width:60%"></i><i style="width:68%"></i></div></div>
+      </div>
+      <div class="spec" style="margin-top:26px">邮箱 / 电话 / 地址 · 13px · 弱化色 · 顶部 1px 分隔线</div>
+      <div class="tb p w40"></div>
+      <div class="spec">© 版权行 11px · 最弱色</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ================= TAB 2 作品列表 ================= -->
+<section class="page">
+
+  <div class="blk" style="margin-top:8px">
+    <div class="tag">W1 · 页头<em>超大字 · 无简介</em></div>
+    <div class="inner" style="padding-top:60px;padding-bottom:20px">
+      <div class="tb h1" style="width:44%"></div>
+      <div class="spec">H1 · our work · 100px→ / -.02em</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">W2 · 分组① + 格式筛选<em>production + post · (42)</em></div>
+    <div class="corner">🖥L2 chip 多选过滤<br>📱L1 横向滑动的 chip 条</div>
+    <div class="inner">
+      <div class="row2" style="align-items:baseline">
+        <div class="tb h2" style="width:56%"></div>
+        <div class="tb cap" style="flex:none"></div>
+      </div>
+      <div class="spec">分组 H2 · 48px + 计数 14px 金色「( 42 )」</div>
+      <div class="tb p w60"></div>
+      <div class="spec">分组简介 14px · max-width 560</div>
+      <div class="chips">
+        <span class="chip on">Brand Storytelling ×</span><span class="chip on">Promo ×</span><span class="chip on">Commercial Spot ×</span><span class="chip">Trailer</span><span class="chip">Music Video</span><span class="chip">Sports Open</span><span class="chip">Mini-Doc</span><span class="chip">Live Visual Album</span><span class="chip">Immersive VR</span><span class="chip">Short Film</span>
+      </div>
+      <div class="spec">筛选 chip · 12.5px · 选中=金边 · 选中项带 × 可移除</div>
+      <div class="grid">
+        <div class="rcard"><div class="media m34">3:4</div><div class="tb" style="width:86%"></div><div class="tb cap"></div></div>
+        <div class="rcard"><div class="media m34">3:4</div><div class="tb" style="width:70%"></div><div class="tb cap"></div></div>
+        <div class="rcard"><div class="media m34">3:4</div><div class="tb" style="width:76%"></div><div class="tb cap"></div></div>
+        <div class="rcard"><div class="media m34">3:4</div><div class="tb" style="width:60%"></div><div class="tb cap"></div></div>
+        <div class="rcard"><div class="media m34">3:4</div><div class="tb" style="width:80%"></div><div class="tb cap"></div></div>
+        <div class="rcard"><div class="media m34">3:4</div><div class="tb" style="width:66%"></div><div class="tb cap"></div></div>
+        <div class="rcard"><div class="media m34">3:4</div><div class="tb" style="width:74%"></div><div class="tb cap"></div></div>
+        <div class="rcard"><div class="media m34">3:4</div><div class="tb" style="width:58%"></div><div class="tb cap"></div></div>
+      </div>
+      <div class="spec">作品栅格 · 🖥4列 / 📱2列 · gap 14 · 整卡可点</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">W3 · 分组② Original TV<em>( 8 ) · 同页第二分组</em></div>
+    <div class="inner">
+      <div class="row2" style="align-items:baseline">
+        <div class="tb h2" style="width:36%"></div>
+        <div class="tb cap" style="flex:none"></div>
+      </div>
+      <div class="spec">分组 H2 · 48px</div>
+      <div class="grid" style="margin-top:16px">
+        <div class="rcard"><div class="media m34">3:4</div><div class="tb" style="width:76%"></div></div>
+        <div class="rcard"><div class="media m34">3:4</div><div class="tb" style="width:64%"></div></div>
+        <div class="rcard"><div class="media m34">3:4</div><div class="tb" style="width:70%"></div></div>
+        <div class="rcard"><div class="media m34">3:4</div><div class="tb" style="width:56%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">W4 · 分组③ Original Film + Coming soon<em>( 17 )</em></div>
+    <div class="inner">
+      <div class="row2" style="align-items:baseline">
+        <div class="tb h2" style="width:40%"></div>
+        <div class="tb cap" style="flex:none"></div>
+      </div>
+      <div class="grid" style="margin:16px 0 20px">
+        <div class="rcard"><div class="media m34">3:4</div><div class="tb" style="width:72%"></div></div>
+        <div class="rcard"><div class="media m34">3:4</div><div class="tb" style="width:60%"></div></div>
+        <div class="rcard soon" style="opacity:.45"><div class="media m34" style="position:relative">3:4<span class="lbl">COMING SOON 遮罩</span></div><div class="tb" style="width:66%"></div></div>
+        <div class="rcard soon" style="opacity:.45"><div class="media m34">3:4</div><div class="tb" style="width:52%"></div></div>
+      </div>
+      <div class="spec">在制项目卡 · 灰化 45% + 居中 COMING SOON 字 · 制造「还在生长」感</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">W5 · 页尾 CTA<em>与首页 S12 同款</em></div>
+    <div class="inner" style="text-align:center;padding:70px 26px">
+      <div class="media m169" style="margin-bottom:24px">通栏氛围图</div>
+      <div class="tb h2" style="width:52%;margin:0 auto"></div>
+      <div style="height:14px"></div>
+      <div class="btn">TALK TO A PRODUCER</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ================= TAB 3 案例详情 ================= -->
+<section class="page">
+
+  <div class="blk" style="margin-top:8px">
+    <div class="tag">P1 · 分类 + 大标题<em>无图先声夺人</em></div>
+    <div class="inner" style="padding-top:70px">
+      <div class="tb micro"></div>
+      <div class="spec">面包屑 · 12px · 金色 · 字距 .22em · 全大写「PRODUCTION + POST SERVICES」</div>
+      <div class="tb h1" style="width:64%"></div>
+      <div class="spec">项目名 H1 · 84px→ / 1.02 / -.015em · 带分隔符「Beckham | Trailer」</div>
+      <div class="btn"><span class="d">▶</span>WATCH THE TRAILER<span class="bs">PILL · 跳视频</span></div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">P2 · 横幅主视觉<em>16:9 · 中央播放钮</em></div>
+    <div class="inner">
+      <div class="media m169" style="position:relative">横幅大图
+        <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border:1.5px solid var(--txt);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px">▶</div>
+        <span class="lbl">圆角 4 · cover</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">P3 · 项目参数表<em>6 格</em></div>
+    <div class="inner">
+      <div class="grid" style="grid-template-columns:repeat(3,1fr)">
+        <div><div class="tb cap"></div><div class="tb" style="width:60%"></div><div class="spec">Client</div></div>
+        <div><div class="tb cap"></div><div class="tb" style="width:48%"></div><div class="spec">Format</div></div>
+        <div><div class="tb cap"></div><div class="tb" style="width:36%"></div><div class="spec">Year</div></div>
+        <div><div class="tb cap"></div><div class="tb" style="width:64%"></div><div class="spec">Genre</div></div>
+        <div><div class="tb cap"></div><div class="tb" style="width:32%"></div><div class="spec">Length</div></div>
+        <div><div class="tb cap"></div><div class="tb" style="width:56%"></div><div class="spec">Services</div></div>
+      </div>
+      <div class="spec" style="margin-top:8px">key 11px · 字距 .2em 全大写弱化 / value 15px · 行底 1px 线 · 🖥3列 📱2列</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">P4 · About the project<em>背景+需求+做法 三段叙事</em></div>
+    <div class="inner" style="max-width:860px">
+      <div class="tb h3" style="height:18px;width:44%"></div>
+      <div class="spec">H3 · 44px→</div>
+      <div class="tb p w80"></div><div class="tb p"></div><div class="tb p w60"></div>
+      <div class="spec">正文 15px · max-width 620 · 刻意小于标题——层级靠字号差拉开</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">P5 · Credits 名单<em>给每个人署名</em></div>
+    <div class="inner" style="max-width:860px">
+      <div class="awrow"><div class="t"><div class="tb" style="width:20%"></div></div><div class="t" style="text-align:right"><div class="tb" style="width:30%;margin-left:auto"></div></div></div>
+      <div class="awrow"><div class="t"><div class="tb" style="width:16%"></div></div><div class="t" style="text-align:right"><div class="tb" style="width:44%;margin-left:auto"></div></div></div>
+      <div class="awrow"><div class="t"><div class="tb" style="width:24%"></div></div><div class="t" style="text-align:right"><div class="tb" style="width:28%;margin-left:auto"></div></div></div>
+      <div class="awrow"><div class="t"><div class="tb" style="width:20%"></div></div><div class="t" style="text-align:right"><div class="tb" style="width:36%;margin-left:auto"></div></div></div>
+      <div class="spec" style="margin-top:10px">左角色 14.5px 弱化 / 右值 · 行底 1px 线</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">P6 · 下一案例卡<em>全宽 · 连续看的核心动线</em></div>
+    <div class="corner">hover 整卡变色</div>
+    <div class="inner" style="padding:56px 26px">
+      <div class="tb micro"></div>
+      <div class="spec">编号 · 13px · 金色「04 — NEXT PROJECT」</div>
+      <div class="tb h2" style="width:56%"></div>
+      <div class="spec">下一项目名 H2 · 64px→</div>
+      <div class="tb cap"></div>
+      <div class="spec">分类 13px · 弱化 · 全大写</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">F1 · 页脚<em>与首页同款</em></div>
+    <div class="inner">
+      <div class="footgrid">
+        <div><div class="fk">Studio</div><div class="fl"><i></i><i style="width:56%"></i></div></div>
+        <div><div class="fk">Film</div><div class="fl"><i style="width:48%"></i><i style="width:60%"></i></div></div>
+        <div><div class="fk">Company</div><div class="fl"><i style="width:64%"></i></div></div>
+        <div><div class="fk">Connect</div><div class="fl"><i style="width:52%"></i></div></div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ================= TAB 4 联系 ================= -->
+<section class="page">
+
+  <div class="blk" style="margin-top:8px">
+    <div class="tag">C1 · 联系表单<em>字段极少 = 低提交门槛</em></div>
+    <div class="inner" style="max-width:780px;padding-top:70px">
+      <div class="tb h1" style="width:40%"></div>
+      <div class="spec">H1 · connect · 84px→</div>
+      <div class="chips" style="margin:26px 0 36px">
+        <span class="chip on">General Inquiry</span><span class="chip">Project Brief</span><span class="chip">Casting Submission</span><span class="chip">Investor &amp; Advocacy Inquiry</span>
+      </div>
+      <div class="spec">来意 Tab · 选中金边 · 切换同一表单</div>
+      <div class="fld"><label>Name *</label><div class="ln"></div></div>
+      <div class="fld"><label>Email *</label><div class="ln"></div></div>
+      <div class="fld"><label>Phone</label><div class="ln"></div></div>
+      <div class="fld"><label>Message *</label><div class="ln" style="height:90px;background:transparent;border:1.5px dashed var(--dash)"></div></div>
+      <div class="spec">输入框 = 底部 1px 线（无框体）· focus 变金 · textarea 高 110</div>
+      <div class="btn">SUBMIT<span class="bs">PILL · 原型演示</span></div>
+      <div style="height:20px"></div>
+      <div class="tb p" style="opacity:.5"></div><div class="tb p w60" style="opacity:.5"></div>
+      <div class="spec">法律免责声明 · 12px · 最弱色</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="tag">F1 · 页脚<em>联系信息在此最全</em></div>
+    <div class="inner">
+      <div class="footgrid">
+        <div><div class="fk">Studio</div><div class="fl"><i></i><i style="width:56%"></i></div></div>
+        <div><div class="fk">Connect</div><div class="fl"><i style="width:52%"></i><i style="width:60%"></i><i style="width:68%"></i></div></div>
+        <div><div class="fk">Contact</div><div class="fl"><i style="width:70%"></i><i style="width:44%"></i></div></div>
+        <div><div class="fk">Follow</div><div class="fl"><i style="width:36%"></i><i style="width:40%"></i></div></div>
+      </div>
+      <div class="spec" style="margin-top:22px">邮箱 700加粗 / 电话 / 地址 · 13px</div>
+    </div>
+  </div>
+
+</section>
+
+</div>
+
+<script>
+function show(i, btn) {
+  document.querySelectorAll('.page').forEach(function(p, j) { p.classList.toggle('on', j === i); });
+  document.querySelectorAll('.tabs button').forEach(function(b, j) { b.classList.toggle('on', j === i); });
+  window.scrollTo(0, 0);
+}
+function vp(mode, btn) {
+  var c = document.getElementById('canvas');
+  c.className = mode;
+  btn.parentNode.querySelectorAll('button').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+}
+</script>
+</body>
+</html>
