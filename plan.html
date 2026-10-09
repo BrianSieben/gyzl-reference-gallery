@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>逛与宙 AI Lab · 内容适配方案（讨论稿）</title>
+<style>
+  :root{
+    --bg:#0a0a0c; --panel:#121216; --panel2:#17171d; --line:#232329;
+    --txt:#ececee; --sub:#9a9aa4; --mut:#6b6b76;
+    --grn:#00e676; --grn-dim:rgba(0,230,118,.12);
+    --amber:#ffc857; --amber-dim:rgba(255,200,87,.12);
+    --blue:#6ea8ff; --blue-dim:rgba(110,168,255,.12);
+    --red:#ff7a7a; --red-dim:rgba(255,122,122,.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.65;font-size:15px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+
+  /* ===== header ===== */
+  header.top{padding:34px 0 8px}
+  .kick{color:var(--grn);font-size:12px;letter-spacing:.22em;font-weight:700;text-transform:uppercase}
+  h1{font-size:clamp(24px,5.6vw,40px);font-weight:800;letter-spacing:.02em;margin:8px 0 6px}
+  .lede{color:var(--sub);font-size:14px;max-width:640px}
+  .meta-strip{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 4px}
+  .meta-strip span{font-size:12px;color:var(--sub);border:1px solid var(--line);border-radius:999px;padding:5px 12px;background:var(--panel)}
+  .back{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:13px;color:var(--grn);text-decoration:none;border:1px solid rgba(0,230,118,.35);border-radius:999px;padding:7px 16px}
+  .back:hover{background:var(--grn-dim)}
+
+  /* ===== tabs ===== */
+  nav.tabs{position:sticky;top:0;z-index:50;background:rgba(10,10,12,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);margin-top:22px}
+  .tabs-in{display:flex;max-width:1080px;margin:0 auto;padding:0 8px;overflow-x:auto;scrollbar-width:none}
+  .tabs-in::-webkit-scrollbar{display:none}
+  .tab{flex:1 0 auto;min-width:max-content;padding:14px 18px;font-size:14px;font-weight:600;color:var(--mut);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;font-family:inherit}
+  .tab.active{color:var(--grn);border-bottom-color:var(--grn)}
+  .tab .n{font-size:11px;color:var(--mut);margin-right:6px;font-weight:500}
+  .tab.active .n{color:var(--grn)}
+
+  main{padding:26px 0 90px}
+  .pane{display:none}
+  .pane.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  h2.sec{font-size:19px;font-weight:800;margin:34px 0 4px;display:flex;align-items:baseline;gap:10px}
+  h2.sec:first-child{margin-top:0}
+  h2.sec .idx{color:var(--grn);font-size:13px;font-weight:700;letter-spacing:.1em}
+  .sec-sub{color:var(--sub);font-size:13px;margin-bottom:16px}
+
+  /* ===== asset cards (tab1) ===== */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px;position:relative;overflow:hidden}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--grn);opacity:.7}
+  .card .pg{font-size:11px;color:var(--grn);letter-spacing:.08em;font-weight:700}
+  .card h3{font-size:15px;font-weight:700;margin:6px 0 6px}
+  .card p{font-size:12.5px;color:var(--sub)}
+  .card .go{margin-top:8px;font-size:11px;color:var(--mut)}
+  .card .go b{color:var(--txt);font-weight:600}
+
+  /* ===== legend / chips ===== */
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
+  .chip{font-size:11.5px;font-weight:700;border-radius:999px;padding:4px 11px;white-space:nowrap}
+  .c-ok{color:var(--grn);background:var(--grn-dim);border:1px solid rgba(0,230,118,.3)}
+  .c-adj{color:var(--amber);background:var(--amber-dim);border:1px solid rgba(255,200,87,.3)}
+  .c-new{color:var(--blue);background:var(--blue-dim);border:1px solid rgba(110,168,255,.3)}
+  .c-tbd{color:var(--red);background:var(--red-dim);border:1px solid rgba(255,122,122,.3)}
+
+  /* ===== mapping tables ===== */
+  .tbl-scroll{overflow-x:auto;margin-top:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+  table.map{width:100%;border-collapse:collapse;min-width:680px}
+  .map th{font-size:11.5px;letter-spacing:.06em;color:var(--mut);text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--panel2);font-weight:700;white-space:nowrap}
+  .map td{padding:14px;border-bottom:1px solid var(--line);vertical-align:top;font-size:13px}
+  .map tr:last-child td{border-bottom:none}
+  .map td.cell-id{white-space:nowrap;font-weight:800;font-size:13.5px}
+  .map td.cell-id small{display:block;font-weight:500;color:var(--sub);font-size:11.5px;margin-top:2px}
+  .map td .src{font-size:12px;color:var(--grn);white-space:nowrap;font-weight:600}
+  .map td .src small{display:block;color:var(--mut);font-weight:400;font-size:11px;white-space:normal}
+  .map td .what{color:var(--txt)}
+  .map td .how{color:var(--sub);font-size:12.5px}
+  .map tr.gap td{background:rgba(255,122,122,.04)}
+
+  /* mobile card mode */
+  @media (max-width:640px){
+    .tbl-scroll{border:none;background:none;overflow:visible}
+    table.map,.map tbody,.map tr,.map td{display:block;min-width:0;width:100%}
+    .map thead{display:none}
+    .map tr{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
+    .map td{border-bottom:none;padding:10px 14px}
+    .map td.cell-id{padding-top:14px}
+    .map td.cell-id small{display:inline;margin-left:8px}
+    .map td::before{content:attr(data-th);display:block;font-size:10.5px;letter-spacing:.1em;color:var(--mut);font-weight:700;margin-bottom:4px}
+    .map td.cell-id::before{content:"板块"}
+    .map tr.gap td{background:transparent}
+  }
+
+  /* ===== question list ===== */
+  .q{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:12px}
+  .q .qn{display:inline-flex;width:24px;height:24px;border-radius:50%;background:var(--grn-dim);color:var(--grn);font-size:12px;font-weight:800;align-items:center;justify-content:center;margin-right:10px;flex:none}
+  .q h3{font-size:14.5px;font-weight:700;display:flex;align-items:flex-start;gap:2px}
+  .q p{font-size:13px;color:var(--sub);margin-top:8px}
+  .q .rec{margin-top:10px;font-size:12.5px;color:var(--txt);background:var(--panel2);border:1px dashed var(--line);border-radius:10px;padding:10px 12px}
+  .q .rec b{color:var(--grn)}
+
+  .note{margin-top:26px;font-size:12px;color:var(--mut);border-top:1px solid var(--line);padding-top:16px}
+  .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:16px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 12px;text-align:center}
+  .stat b{display:block;font-size:22px;font-weight:800;color:var(--grn)}
+  .stat span{font-size:11px;color:var(--sub)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="kick">Guangyuzhou AI Lab · Adaptation Plan v1</div>
+    <h1>《2026Q2 逛与宙 AI》内容适配方案</h1>
+    <p class="lede">把品牌 PDF（26 页）的内容资产，一一对应到 Evolve 复刻框架的四大页面板块。本稿只讨论映射关系与调整建议，<b style="color:var(--txt)">暂不改动现有页面</b>。</p>
+    <div class="meta-strip">
+      <span>📄 依据：2026Q2逛与宙AI_完整版V2.pdf（26 页）</span>
+      <span>🧩 框架：Evolve 复刻线稿（S1–S12 / W1–W5 / P1–P6 / C1）</span>
+      <span>🗓 2026-10-09 · 讨论稿</span>
+    </div>
+    <a class="back" href="./index.html">← 返回体验台（Evolve 复刻）</a>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="tabs-in">
+    <button class="tab active" data-pane="p-overview"><span class="n">01</span>内容资产总览</button>
+    <button class="tab" data-pane="p-home"><span class="n">02</span>首页板块映射</button>
+    <button class="tab" data-pane="p-works"><span class="n">03</span>作品列表 + 案例详情</button>
+    <button class="tab" data-pane="p-contact"><span class="n">04</span>联系页 · 全局 · 讨论</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ================= TAB 1 总览 ================= -->
+<section class="pane active" id="p-overview">
+  <h2 class="sec"><span class="idx">01</span>PDF 里到底有什么：10 组内容资产</h2>
+  <p class="sec-sub">按"官网可直接使用"的粒度拆出的全部素材。每组标注了建议去向（对应右侧三个映射 Tab 的板块编号）。</p>
+
+  <div class="grid">
+    <div class="card"><div class="pg">P1 · P26</div><h3>品牌标识与新 Slogan</h3><p>「逛与宙 COSMOS AI」组合 Logo；封底新标语「以 AI 赴万象 自在逛与宙」。</p><div class="go">→ <b>S8 宣言</b> · <b>S1 HERO 副标</b></div></div>
+    <div class="card"><div class="pg">P2</div><h3>品牌定位宣言</h3><p>AIGC+IP 内容型科技公司；8 年影视广告经验；「用 AI 重构内容生产方式，赋能 IP 商业化」；双引擎 COSMOS TECH（自研 AI+实拍）/ COSMOS LAB（自研 AIGC Agent）。</p><div class="go">→ <b>S3 定位区</b> · <b>S6 理念长文</b></div></div>
+    <div class="card"><div class="pg">P3 · P25</div><h3>信任背书</h3><p>北京市政府扶持头部 AIGC 企业、CCTV13 等媒体报道、市科委引进、火山引擎 Seedance 战略合作。</p><div class="go">→ <b>S11 履历背书</b></div></div>
+    <div class="card"><div class="pg">P4 · P5 · P8</div><h3>技术体系</h3><p>整体体系图（8 年方法论→技术封装→四业务）；COSMOS TECH 虚拟拍摄流程（AIGC 素材→演员虚拟拍摄→AI 融合实拍）；COSMOS LAB × 清华大学 ACUindex Intelligence Stack（4 模型 + REVERSE TRAINING LOOP）。</p><div class="go">→ <b>S7 服务能力四联</b> · <b>P4 案例叙事</b></div></div>
+    <div class="card"><div class="pg">P6 · P7 · P15 · P16</div><h3>影视案例（含数据）</h3><p>《万花世界》× 恒星引力 × 鞠婧祎 × 腾讯视频（评分 9.8 / 人气 390.6 亿 / 预约 111 万）；《凡人修仙传》× 万维猫 × 林宇昂导演（追番 1699 万 / 65.8 亿播放 / 热搜 65 个）；院线电影《长生天》（保密项目，只有氛围剧照）。</p><div class="go">→ <b>S5 轮播</b> · <b>W3 影视分组</b> · <b>P2/P3/P4 详情</b></div></div>
+    <div class="card"><div class="pg">P17 – P24</div><h3>品牌商业案例 13+</h3><p>美团系列 4（李诞《蛋的旅行》/ 虚拟人首部 MV / 故宫七夕 / 世界杯）；传音 2（TECNO CAMON 50 × 张艺兴 / 海外 TVC）；特斯拉 Model S 2（概念片 / 城市功能片）；奥妙 2（吴磊 / 樊振东）；金典有机奶；木九十 TVC；易森动力；王者荣耀角色亮相片；原神。</p><div class="go">→ <b>S4 轮播</b> · <b>W2 品牌广告分组</b></div></div>
+    <div class="card"><div class="pg">P13 · P14</div><h3>客户墙 + 案例墙</h3><p>60+ 商业化客户 Logo（汽车/互联网/快消美妆/食品饮料/3C 数码/金融游戏 6 行分组）；40+ 案例缩略图拼贴墙。</p><div class="go">→ <b>S2 客户 LOGO 墙</b> · <b>S9 数字区佐证</b></div></div>
+    <div class="card"><div class="pg">P9</div><h3>独家签约导演 5 人</h3><p>林宇昂（北影导演系 / 凡人修仙传 34 季）、蔺宇涵 LIN（《无梦者 Dreamless》《非相之界》）、崔艺涵（万花世界 AIGC 先导片）、钟俊杰（美团/传音/海信）、林思琪（中戏编剧）。</p><div class="go">→ <b>S10 团队入口</b> · <b>P5 Credits 署名</b></div></div>
+    <div class="card"><div class="pg">P10 · P12</div><h3>联盟与自媒体声量</h3><p>逛与宙 × iCAN 高校 AI 视频挑战赛（北大清华等 45+ 校徽）；自媒体 425 万+播放 / 32 万赞 / 7 万评论，抖音娱乐榜 TOP49、挑战榜 TOP17。</p><div class="go">→ <b>S9 数字区</b> · <b>S11 背书</b></div></div>
+    <div class="card"><div class="pg">P11 · P25</div><h3>自有 IP 与发展规划</h3><p>自有 IP 三件套：AI 电影《DREAMLESS》、AI 剧集《非相之界》、AI 虚拟偶像 ZORA；近期规划时间线 2026Q2（万花世界+共创计划）→ 2026Q3（乌尔善院线电影·保密）→ 2026Q4（优酷 S+ 剧集·保密）→ 2027Q1（自有 IP 上线海内外含 Netflix）。</p><div class="go">→ <b>W4 第三分组</b> · <b>S11 近期动态</b></div></div>
+  </div>
+
+  <h2 class="sec" style="margin-top:38px"><span class="idx">02</span>适配总判断</h2>
+  <div class="stat-row">
+    <div class="stat"><b>26</b><span>PDF 页面全部解析完毕</span></div>
+    <div class="stat"><b>13+</b><span>具名案例可直接入库</span></div>
+    <div class="stat"><b>60+</b><span>客户 Logo 素材现成</span></div>
+    <div class="stat"><b>~85%</b><span>框架板块可直接/微调适配</span></div>
+  </div>
+  <p class="sec-sub" style="margin-top:16px">结论：PDF 的内容<b style="color:var(--txt)">覆盖框架全部 24 个板块中的 22 个</b>，其中 17 个属于"素材直接可用"，5 个需要微调融合；真正的内容缺口只有两处 —— ① 案例详情的「用户需求 / 挑战 / 过程稿」叙事文案（PDF 只有图+一句话标题）；② 联系邮箱与二维码（PDF 文字层乱码未能确认）。</p>
+</section>
+
+<!-- ================= TAB 2 首页 ================= -->
+<section class="pane" id="p-home">
+  <h2 class="sec"><span class="idx">02</span>首页 S1–S12 板块映射</h2>
+  <div class="legend">
+    <span class="chip c-ok">● 直接适配</span>
+    <span class="chip c-adj">● 微调融合</span>
+    <span class="chip c-new">● 新增建议</span>
+    <span class="chip c-tbd">● 待客户提供</span>
+  </div>
+
+  <div class="tbl-scroll"><table class="map">
+    <thead><tr><th>板块</th><th>PDF 来源</th><th>放什么内容</th><th>调整 / 融合建议</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td class="cell-id" data-th="板块">S1 HERO<small>100vh 视频满铺</small></td><td data-th="PDF 来源"><span class="src">P1 / P15 / P16<small>封面 + 影视案例氛围剧照</small></span></td><td data-th="放什么内容"><span class="what">万花世界 / 混剪视频 LOOP + 新 Slogan「以 AI 赴万象 自在逛与宙」</span></td><td data-th="调整建议"><span class="how">标题从旧宣言换新封底 Slogan；视频用影视案例混剪，一打开就是"电影感"。</span></td><td><span class="chip c-ok">直接适配</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">S2 客户 LOGO 墙<small>灰度 12 个</small></td><td data-th="PDF 来源"><span class="src">P13<small>60+ 客户，6 行业分组</small></span></td><td data-th="放什么内容"><span class="what">精选 12 个头部客户：奔驰 / 抖音 / 美团 / 特斯拉 / 奥妙 / 华为 / 王者荣耀 / 金典 / 腾讯视频 / 原神 / 故宫博物院 / 传音</span></td><td data-th="调整建议"><span class="how">角标加「60+ 商业化客户」数量信任状；鼠标悬停或点击展开全量 Logo 墙（PDF P13 原图直接可用）。</span></td><td><span class="chip c-ok">直接适配</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">S3 一句话定位区<small>全站唯一浅底</small></td><td data-th="PDF 来源"><span class="src">P2<small>关于我们</small></span></td><td data-th="放什么内容"><span class="what">「AIGC + IP 内容型科技公司 —— 用 AI 重构内容生产方式，赋能 IP 商业化」</span></td><td data-th="调整建议"><span class="how">一句话照抄 PDF 定位语即可，下面可加小字「8 年影视广告经验 · 自研 AI + 实拍双引擎」。</span></td><td><span class="chip c-ok">直接适配</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">S4 业务① 作品轮播<small>= 品牌 AI 广告</small></td><td data-th="PDF 来源"><span class="src">P17–P24<small>品牌商业案例</small></span></td><td data-th="放什么内容"><span class="what">4 张代表案例横卡：美团×李诞《蛋的旅行》/ TECNO CAMON 50 × 张艺兴 / 特斯拉 Model S 概念片 / 奥妙×樊振东 TVC</span></td><td data-th="调整建议"><span class="how">选"传播度最高 + 视觉差异最大"的 4 个；每张卡角标标客户行业（互联网/出海/汽车/快消）。</span></td><td><span class="chip c-adj">微调融合</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">S5 业务② 作品轮播<small>= 影视</small></td><td data-th="PDF 来源"><span class="src">P6 / P7 / P15 / P16<small>万花世界 / 凡人修仙传 / 长生天</small></span></td><td data-th="放什么内容"><span class="what">万花世界（鞠婧祎）/ 凡人修仙传（万维猫）/ 院线电影《长生天》/ 自有 IP《DREAMLESS》</span></td><td data-th="调整建议"><span class="how">《长生天》标注"保密项目·2026"，只放氛围图不放剧情信息；与 S4 结构完全复用，保持节奏对称。</span></td><td><span class="chip c-adj">微调融合</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">S6 理念长文<small>讲道理专区</small></td><td data-th="PDF 来源"><span class="src">P4 / P11<small>整体体系 + AIGC 是过程 IP 是结果</small></span></td><td data-th="放什么内容"><span class="what">「像拍电影那样拍广告」8 年方法论 → 技术封装 → 逛与宙 AI；落点在「AIGC 是过程，IP 是结果」</span></td><td data-th="调整建议"><span class="how">把 PDF 两页论述合并成一篇 3 段式 ethos 长文，这是全站"为什么是我们"的唯一论述位。</span></td><td><span class="chip c-adj">微调融合</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">S7 服务能力四联<small>01–04 编号</small></td><td data-th="PDF 来源"><span class="src">P4 / P5<small>四业务 + 虚拟拍摄流程</small></span></td><td data-th="放什么内容"><span class="what">01 品牌 AI 广告 ／ 02 影视（AI+实拍剧集·电影）／ 03 IP 商业化 ／ 04 IP 开发（自有 IP 孵化）</span></td><td data-th="调整建议"><span class="how">PDF 的"四业务"比网站三分类多一个，建议直接采用 PDF 四分法填满四联；每联配 COSMOS TECH 流程图（P5）做背景循环。</span></td><td><span class="chip c-adj">微调融合</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">S8 品牌态度宣言<small>居中 ®</small></td><td data-th="PDF 来源"><span class="src">P26<small>封底新 Slogan</small></span></td><td data-th="放什么内容"><span class="what">「以 AI 赴万象 自在逛与宙」</span></td><td data-th="调整建议"><span class="how">全站主 Slogan 统一用这句（替换早期"用 AI 重构内容生产方式"在视觉 C 位的位置，后者降级为 S3 定位语）。</span></td><td><span class="chip c-ok">直接适配</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">S9 奖项数字<small>5 行信任状</small></td><td data-th="PDF 来源"><span class="src">P6/7/9/10/12/13/14<small>全书数据点</small></span></td><td data-th="放什么内容"><span class="what">8 年影视广告经验 / 60+ 商业化客户 / 40+ 商业化案例 / 5 位独家签约 AIGC 导演 / 425 万+ 自媒体播放</span></td><td data-th="调整建议"><span class="how">PDF 数据很富余，精选"经验-客户-案例-团队-声量"5 行成递进；单案例大数字（390.6 亿人气等）留给案例详情 P3 参数表。</span></td><td><span class="chip c-ok">直接适配</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">S10 团队入口<small>左文右图</small></td><td data-th="PDF 来源"><span class="src">P9<small>签约导演 5 人</small></span></td><td data-th="放什么内容"><span class="what">「独家签约 AIGC 导演 ×5」+ 导演群像，点进关于页看五人详细介绍</span></td><td data-th="调整建议"><span class="how">需要客户确认：① 是否放首页；② 导演肖像授权。若不便放人像，改用"AIGC 导演工作室"抽象视觉 + 名单。</span></td><td><span class="chip c-tbd">待客户确认</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">S11 履历背书<small>氛围底图</small></td><td data-th="PDF 来源"><span class="src">P3 / P25<small>政府媒体背书 + 发展规划</small></span></td><td data-th="放什么内容"><span class="what">央视报道 / 市科委引进 / 火山引擎战略合作；下方加"近期动态"时间线：2026Q2 万花世界 → 2026Q3 乌尔善院线电影（保密）→ 2026Q4 优酷 S+（保密）→ 2027Q1 自有 IP 上线 Netflix</span></td><td data-th="调整建议"><span class="how">把 PDF 末页时间线首次用进官网，制造"一直在发生"的鲜活感；保密项目严格只写时间节点。</span></td><td><span class="chip c-adj">微调融合</span></td></tr>
+      <tr class="gap"><td class="cell-id" data-th="板块">S12 结尾 CTA<small>满屏氛围图</small></td><td data-th="PDF 来源"><span class="src">—<small>PDF 无联系信息</small></span></td><td data-th="放什么内容"><span class="what">「有一个想法？聊聊」→ 联系页</span></td><td data-th="调整建议"><span class="how">邮箱地址在 PDF 文字层是乱码，未能确认；需客户提供官网联系邮箱 + 微信二维码后替换。</span></td><td><span class="chip c-tbd">待客户提供</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ================= TAB 3 作品列表+详情 ================= -->
+<section class="pane" id="p-works">
+  <h2 class="sec"><span class="idx">03</span>作品列表页 W1–W5 映射</h2>
+  <div class="legend"><span class="chip c-ok">● 直接适配</span><span class="chip c-adj">● 微调融合</span><span class="chip c-new">● 新增建议</span><span class="chip c-tbd">● 待讨论</span></div>
+  <div class="tbl-scroll"><table class="map">
+    <thead><tr><th>板块</th><th>PDF 来源</th><th>放什么内容</th><th>调整 / 融合建议</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td class="cell-id" data-th="板块">W1 页头<small>超大字无简介</small></td><td data-th="PDF 来源"><span class="src">—</span></td><td data-th="放什么内容"><span class="what">标题：作品 / Works</span></td><td data-th="调整建议"><span class="how">保持 Evolve 式极简页头；数量角标写「13+ 精选案例 · 持续更新」。</span></td><td><span class="chip c-ok">直接适配</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">W2 分组①<small>品牌 AI 广告</small></td><td data-th="PDF 来源"><span class="src">P17–P24<small>商业案例 13 个</small></span></td><td data-th="放什么内容"><span class="what">美团×李诞《蛋的旅行》/ 美团虚拟人 MV / 美团×故宫七夕 / 美团世界杯 / TECNO×张艺兴 / 传音 TVC / 特斯拉×2 / 奥妙×2 / 金典 / 木九十 / 易森动力 / 王者荣耀 / 原神</span></td><td data-th="调整建议"><span class="how">这是案例库主力，占全页约 60%；筛选器建议按行业：互联网 / 出海 / 汽车 / 快消 / 科技 / 游戏。</span></td><td><span class="chip c-ok">直接适配</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">W3 分组②<small>影视</small></td><td data-th="PDF 来源"><span class="src">P6 / P7 / P15 / P16</span></td><td data-th="放什么内容"><span class="what">万花世界 / 凡人修仙传 / 长生天（保密）/ 非相之界（自有 IP 剧集）</span></td><td data-th="调整建议"><span class="how">影视只有 3–4 个，建议与自有 IP 合并展示避免空荡；或把"影视"与"品牌广告"之间的顺序对调，把分量重的放前面。</span></td><td><span class="chip c-adj">微调融合</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">W4 分组③<small>第三分组</small></td><td data-th="PDF 来源"><span class="src">P11<small>自有 IP 孵化</small></span></td><td data-th="放什么内容"><span class="what">AI 电影《DREAMLESS》/ AI 剧集《非相之界》/ AI 虚拟偶像 ZORA</span></td><td data-th="调整建议"><span class="how">建议：把预留的第四个分类定为「自有 IP」。这与"品牌"分类的从属关系需讨论（见 Tab 4 问题 2）。</span></td><td><span class="chip c-adj">待讨论</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">W5 页尾 CTA<small>同 S12</small></td><td data-th="PDF 来源"><span class="src">—</span></td><td data-th="放什么内容"><span class="what">同款 CTA：合作咨询 → 联系页</span></td><td data-th="调整建议"><span class="how">不变。</span></td><td><span class="chip c-ok">直接适配</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 class="sec" style="margin-top:40px"><span class="idx">03b</span>案例详情页 P1–P6 映射</h2>
+  <div class="tbl-scroll"><table class="map">
+    <thead><tr><th>板块</th><th>PDF 来源</th><th>放什么内容</th><th>调整 / 融合建议</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td class="cell-id" data-th="板块">P1 分类 + 大标题</td><td data-th="PDF 来源"><span class="src">各案例页标题</span></td><td data-th="放什么内容"><span class="what">分类（AI 广告/影视）+ 案例名 + 客户联合署名（如「美团外卖 × 逛与宙」）</span></td><td data-th="调整建议"><span class="how">沿用 PDF 的联合署名版式，客户 Logo 放标题下方一行。</span></td><td><span class="chip c-ok">直接适配</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">P2 横幅主视觉<small>16:9 播放钮</small></td><td data-th="PDF 来源"><span class="src">P15–P24<small>每案例均有剧照网格</small></span></td><td data-th="放什么内容"><span class="what">案例正片或先导片，封面帧从 PDF 剧照中选取</span></td><td data-th="调整建议"><span class="how">素材现成；需客户提供各案例视频文件或在线播放链接。</span></td><td><span class="chip c-tbd">待客户提供视频</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">P3 项目参数表<small>6 格</small></td><td data-th="PDF 来源"><span class="src">P6 / P7<small>案例数据</small></span></td><td data-th="放什么内容"><span class="what">客户 / 平台 / 类型 / 年份 / 导演 / 技术栈 + 成绩格：评分 9.8 · 人气 390.6 亿 · 预约 111 万 · 65.8 亿播放 · 热搜 65 个</span></td><td data-th="调整建议"><span class="how">万花世界、凡人修仙传两案数据最全，优先做样板；商业案例参数改为"投放平台/上线时间/播放量"口径。</span></td><td><span class="chip c-adj">微调融合</span></td></tr>
+      <tr class="gap"><td class="cell-id" data-th="板块">P4 About 三段叙事<small>背景+需求+做法</small></td><td data-th="PDF 来源"><span class="src">⚠ 缺口<small>PDF 只有图+一句话标题</small></span></td><td data-th="放什么内容"><span class="what">客户需求（要达成什么）→ 挑战（为什么难）→ 我们的做法（AI 如何介入）→ 结果数据</span></td><td data-th="调整建议"><span class="how">这是本次适配最大的内容缺口。建议先以《万花世界》《美团×李诞》为样板写两篇，其余案例客户提供一句话需求说明即可批量补齐。</span></td><td><span class="chip c-tbd">需补文案</span></td></tr>
+      <tr class="gap"><td class="cell-id" data-th="板块">P5 Credits 名单</td><td data-th="PDF 来源"><span class="src">P9<small>签约导演</small></span></td><td data-th="放什么内容"><span class="what">导演 / AIGC 指导 / 技术 / 客户方署名</span></td><td data-th="调整建议"><span class="how">导演栏直接关联 P9 五人（如林宇昂→凡人修仙传、崔艺涵→万花世界）；其余 Credits 需客户提供制作名单。</span></td><td><span class="chip c-tbd">部分待提供</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">P6 下一案例卡<small>连续看动线</small></td><td data-th="PDF 来源"><span class="src">—</span></td><td data-th="放什么内容"><span class="what">按同分类推荐下一案例</span></td><td data-th="调整建议"><span class="how">逻辑不变；影视案例的"下一案例"优先推同平台项目（万花世界→优酷 S+ 保密项目占位）。</span></td><td><span class="chip c-ok">直接适配</span></td></tr>
+      <tr class="gap"><td class="cell-id" data-th="板块">过程稿 / 幕后<small>用户此前要求</small></td><td data-th="PDF 来源"><span class="src">⚠ 缺口<small>PDF 无过程稿</small></span></td><td data-th="放什么内容"><span class="what">在 P4 与 P5 之间插入「过程稿」条带：分镜草图 → AIGC 生成帧 → 虚拟拍摄现场 → 最终画面</span></td><td data-th="调整建议"><span class="how">PDF P5 虚拟拍摄流程图可复用为过程稿版式模板；实际过程素材需客户提供，或由我们做"四格对比"版式待填。</span></td><td><span class="chip c-tbd">需补素材</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ================= TAB 4 联系+全局+讨论 ================= -->
+<section class="pane" id="p-contact">
+  <h2 class="sec"><span class="idx">04</span>联系页 C1 与全局元素</h2>
+  <div class="tbl-scroll"><table class="map">
+    <thead><tr><th>板块</th><th>PDF 来源</th><th>放什么内容</th><th>调整 / 融合建议</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td class="cell-id" data-th="板块">C1 联系表单<small>低门槛字段</small></td><td data-th="PDF 来源"><span class="src">P25<small>仅版权行 © COSMOS AI | Guangyuzhou Technology Co., Ltd.</small></span></td><td data-th="放什么内容"><span class="what">姓名 / 公司 / 需求一句话 / 邮箱或微信</span></td><td data-th="调整建议"><span class="how">邮箱地址在 PDF 文字层乱码无法确认（只看到 3137@ 开头片段）。请提供：① 官网联系邮箱；② 微信二维码；③ 公司地址（中英文）。</span></td><td><span class="chip c-tbd">待客户提供</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">全局 · 中英双语</td><td data-th="PDF 来源"><span class="src">—<small>PDF 仅中文版</small></span></td><td data-th="放什么内容"><span class="what">全站中英切换</span></td><td data-th="调整建议"><span class="how">英文版需新译：品牌名建议用 "Guangyuzhou AI Lab"（PDF 版权行用 Guangyuzhou Technology Co., Ltd.）；Slogan 英译建议 "All worlds, one AI — roam free in Guangyuzhou"，可再议。</span></td><td><span class="chip c-new">新增翻译</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">全局 · 深色模式与品牌色</td><td data-th="PDF 来源"><span class="src">全书<small>黑底 + 亮绿强调</small></span></td><td data-th="放什么内容"><span class="what">深色优先，强调色与 PDF 绿色一致</span></td><td data-th="调整建议"><span class="how">PDF 视觉本身就是黑底绿字，与既定深色方向完全吻合，无需调整；绿色色值建议取自 PDF Logo 的荧光绿。</span></td><td><span class="chip c-ok">直接适配</span></td></tr>
+      <tr><td class="cell-id" data-th="板块">全局 · 导航四分法</td><td data-th="PDF 来源"><span class="src">P4<small>四业务版图</small></span></td><td data-th="放什么内容"><span class="what">全部 / AI 广告 / 影视 / 品牌广告（+待定第四类）</span></td><td data-th="调整建议"><span class="how">PDF 四业务 ≠ 网站作品分类，建议"双轨"：作品页按内容形态分类，服务能力（S7）按业务线讲。详见下方问题 1。</span></td><td><span class="chip c-adj">待讨论</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 class="sec" style="margin-top:40px"><span class="idx">04b</span>动手前要先拍板的 6 个问题</h2>
+
+  <div class="q"><h3><span class="qn">1</span>业务四分法与网站分类如何对齐？</h3>
+    <p>我们框架的作品分类是「全部 / AI / 影视 / 品牌广告」，而 PDF P4 的业务是「AI 影视 / IP 商业化 / IP 开发 / 商业广告」，两者不是一回事。</p>
+    <div class="rec"><b>建议</b>：双轨制 —— 作品列表按内容形态分（AI 广告 / 影视 / 品牌广告），首页 S7 服务能力按 PDF 业务线讲（品牌 AI 广告 / 影视 / IP 商业化 / IP 开发）。两套各自成立，互不冲突。</div>
+  </div>
+
+  <div class="q"><h3><span class="qn">2</span>预留的第四个分类放什么？</h3>
+    <p>之前全站地图里第四个业务分类留空。PDF 给出了现成答案：自有 IP 三件套（DREAMLESS / 非相之界 / ZORA）。</p>
+    <div class="rec"><b>建议</b>：第四类定为「自有 IP」。这样四个 Tab = 全部 / AI 广告 / 影视 / 自有 IP，与 PDF 资产完全对齐；但"品牌广告"和"AI 广告"的边界需要先定义清楚（见问题 3）。</div>
+  </div>
+
+  <div class="q"><h3><span class="qn">3</span>"AI 广告"和"品牌广告"的边界？</h3>
+    <p>PDF 里 13 个商业案例大多是"AI + 实拍"混合（美团世界杯、奥妙 TVC 有明显实拍成分），严格按"是否纯 AI"分会把案例切碎。</p>
+    <div class="rec"><b>建议</b>：AI 广告 = AIGC 占主导的片子（蛋的旅行、虚拟人 MV、TECNO、特斯拉概念片…）；品牌广告 = 实拍为主、AI 辅助的 TVC（奥妙、金典、木九十…）。 ambiguous 的默认进 AI 广告（毕竟品牌主张是 AI 公司）。</div>
+  </div>
+
+  <div class="q"><h3><span class="qn">4</span>签约导演 5 人墙放不放首页？</h3>
+    <p>S10 团队入口需要导演肖像。PDF P9 有五个人名和履历，但肖像授权、是否愿意上官网都需要确认。</p>
+    <div class="rec"><b>建议</b>：确认授权后放首页 S10（这是差异信任状："别人讲技术，我们讲导演"）；不授权则改为名字墙 + 履历文字，不放照片。</div>
+  </div>
+
+  <div class="q"><h3><span class="qn">5</span>发展规划时间线（含保密项目）能上官网吗？</h3>
+    <p>P25 有 2026Q2–2027Q1 四个节点，其中两个是保密项目。放在 S11 能制造期待感，但有泄露风险和时间跳票风险。</p>
+    <div class="rec"><b>建议</b>：上，但只写时间与一句话描述（如"2026Q4 · 优酷 S+ 级剧集，超级 IP 影视化"），不写出品方和 IP 名；已公开的（万花世界、乌尔善合作）正常写。</div>
+  </div>
+
+  <div class="q"><h3><span class="qn">6</span>案例详情页的「需求 + 过程稿」谁供给？</h3>
+    <p>P4 三段叙事和过程稿条带是方案里最大的内容缺口，PDF 没有现成文字。</p>
+    <div class="rec"><b>建议</b>：客户提供每个案例的"一句话需求 + 三句过程描述"即可，我们负责扩写成统一版式；先做《万花世界》和《美团×李诞》两个样板给大家定调。</div>
+  </div>
+
+  <p class="note">本页为讨论稿 v1（2026-10-09）。确认以上 6 个问题后，下一步把映射结果回填到 Evolve 复刻框架，输出带真实文案的页面样稿。PDF 原文已存档于项目目录。</p>
+</section>
+
+</main>
+
+<script>
+  var tabs=document.querySelectorAll('.tab'),panes=document.querySelectorAll('.pane');
+  tabs.forEach(function(t){
+    t.addEventListener('click',function(){
+      tabs.forEach(function(x){x.classList.remove('active')});
+      panes.forEach(function(x){x.classList.remove('active')});
+      t.classList.add('active');
+      document.getElementById(t.dataset.pane).classList.add('active');
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+</script>
+</body>
+</html>
