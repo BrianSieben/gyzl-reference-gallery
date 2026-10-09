@@ -698,6 +698,98 @@
     var c=t.dataset.cat;
     wcards.forEach(function(w){w.style.display=(c==='all'||w.dataset.cat===c)?'flex':'none'});
   })});
+
+  /* ===== 演示版交互接线（分享体验用） ===== */
+  function switchTab(name,filter){
+    document.querySelector('#pageGrp [data-page="'+name+'"]').click();
+    if(filter){var fb=document.querySelector('#ftabs [data-cat="'+filter+'"]');if(fb)fb.click();}
+  }
+  function scrollContact(){
+    var c=document.querySelector('.sheet.on .contact-ft');
+    if(c){c.scrollIntoView({behavior:'smooth',block:'start'});c.style.boxShadow='inset 0 0 0 2px rgba(0,230,118,.6)';setTimeout(function(){c.style.boxShadow=''},1600);}
+  }
+  // 弹窗骨架
+  var modal=document.createElement('div');
+  modal.id='demoModal';
+  modal.innerHTML='<div class="m-back"></div><div class="m-box"><div class="m-head"><span class="m-title"></span><button class="m-close">✕ 关闭</button></div><div class="m-body"></div></div>';
+  document.body.appendChild(modal);
+  function openModal(title,html){
+    modal.querySelector('.m-title').textContent=title;
+    modal.querySelector('.m-body').innerHTML=html;
+    modal.classList.add('open');
+  }
+  modal.addEventListener('click',function(e){
+    if(e.target.classList.contains('m-back')||e.target.closest('.m-close'))modal.classList.remove('open');
+  });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')modal.classList.remove('open')});
+
+  // S1 HERO 两个按钮
+  var heroBtns=document.querySelectorAll('.hero .btnw');
+  heroBtns[0].addEventListener('click',function(){switchTab('film','all')});
+  heroBtns[1].addEventListener('click',scrollContact);
+  // S2 展开全部 Logo 墙
+  document.querySelector('.logos').closest('.blk').querySelector('.btnw').addEventListener('click',function(){
+    var cells='';for(var i=0;i<24;i++)cells+='<div class="ph small">Logo '+(i+13)+'</div>';
+    openModal('商业化客户 · 60+ 全览（素材：PDF P13）','<div class="m-logos">'+cells+'</div><p class="lbl" style="margin-top:10px">按行业分组：汽车 / 互联网 / 快消美妆 / 食品饮料 / 3C 数码 / 金融游戏</p>');
+  });
+  // S4 / S5 轮播卡 → 对应 Tab
+  document.querySelectorAll('.cards .ccard').forEach(function(card){
+    card.style.cursor='pointer';
+    card.addEventListener('click',function(){
+      var t=(card.textContent||'');
+      if(t.indexOf('IP 工坊')>-1)switchTab('ip');
+      else if(t.indexOf('自有 IP')>-1)switchTab('film','own');
+      else switchTab('film','all');
+    });
+  });
+  // S7 四联按钮
+  var quadBtns=document.querySelectorAll('.quad .qcell .btnw');
+  var quadGo=['film','ip','tech','own'];
+  quadBtns.forEach(function(b,i){b.addEventListener('click',function(){
+    if(quadGo[i]==='own')switchTab('film','own');else switchTab(quadGo[i]);
+  })});
+  // S10 查看全部导演
+  document.querySelector('.dirs').closest('.blk').querySelector('.btnw').addEventListener('click',function(){
+    openModal('独家签约 AIGC 导演 · 全名单','<div class="m-credits"><div><b>林宇昂</b> · 北京电影学院导演系 ·《凡人修仙传》1–34 季</div><div><b>蔺宇涵 LIN</b> · 导演 ·《无梦者 DREAMLESS》《非相之界》</div><div><b>崔艺涵</b> · 导演 ·《万花世界》AIGC 先导片</div><div><b>钟俊杰</b> · 导演 · 服务美团 / 传音 / 海信</div><div><b>林思琪</b> · 编剧 · 中央戏剧学院</div></div><p class="lbl" style="margin-top:10px">肖像授权待确认，确认后此处升级为图文卡片墙。</p>');
+  });
+  // 所有「发起合作」→ 滚到本页联系区
+  document.querySelectorAll('.contact-ft .btnw').forEach(function(b){b.addEventListener('click',scrollContact)});
+  // AI 影视：案例卡 → 案例详情弹窗（版式样板）
+  wcards.forEach(function(w){
+    w.style.cursor='pointer';
+    w.addEventListener('click',function(){
+      if(w.dataset.cat==='ip'){switchTab('ip');return;}
+      var title=w.querySelector('b').textContent,client=w.querySelector('.lbl').textContent;
+      var chips=[].map.call(w.querySelectorAll('.chip'),function(c){return c.textContent}).join(' · ');
+      openModal('案例详情 · '+title,
+        '<div class="ph" style="aspect-ratio:16/9;min-height:0;margin-bottom:12px">视频封面占位 · 点击播放正片</div>'+
+        '<div class="m-meta"><div><span>客户</span><b>'+client+'</b></div><div><span>标签</span><b>'+chips+'</b></div><div><span>参数表</span><b>6 格（见 IP 工坊样板）</b></div></div>'+
+        '<p class="lbl" style="margin-top:12px">版式样板见「IP 工坊」Tab 的凡人修仙传案例：参数表 → 三段叙事 → 过程稿四格 → Credits。每个案例配「一句话需求 + 三句过程」即可批量填充。</p>'+
+        '<div class="row" style="margin-top:12px"><a class="btnw" id="mNext">看下一个案例 →<i>BTN</i></a></div>');
+      var nb=modal.querySelector('#mNext');
+      if(nb)nb.addEventListener('click',function(){modal.classList.remove('open');switchTab('film')});
+    });
+  });
+  // IP 工坊 I7 → AI 影视
+  var ipNext=document.querySelector('#pg-ip .nextcase .btnw');
+  if(ipNext)ipNext.addEventListener('click',function(){switchTab('film','film')});
 </script>
+<style>
+  #demoModal{display:none;position:fixed;inset:0;z-index:999}
+  #demoModal.open{display:block}
+  #demoModal .m-back{position:absolute;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(4px)}
+  #demoModal .m-box{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(680px,92vw);max-height:86vh;overflow:auto;background:#15151b;border:1px solid #2c2c36;border-radius:16px;padding:20px 22px}
+  #demoModal .m-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px}
+  #demoModal .m-title{font-size:16px;font-weight:800}
+  #demoModal .m-close{border:1px solid #3a3a46;background:#1a1a22;color:#9a9aa4;border-radius:999px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:inherit;flex:none}
+  #demoModal .m-logos{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  #demoModal .m-credits div{font-size:13px;color:#9a9aa4;border-bottom:1px dashed #2c2c36;padding:8px 0}
+  #demoModal .m-credits b{color:#ececee}
+  #demoModal .m-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  #demoModal .m-meta div{border:1px solid #26262f;border-radius:10px;padding:10px;background:#1a1a22}
+  #demoModal .m-meta span{font-size:10px;color:#6b6b76;display:block;letter-spacing:.08em}
+  #demoModal .m-meta b{font-size:12.5px}
+  @media (max-width:640px){#demoModal .m-logos{grid-template-columns:repeat(3,1fr)}#demoModal .m-meta{grid-template-columns:1fr}}
+</style>
 </body>
 </html>
