@@ -236,7 +236,7 @@
     <ul>
       <li><b>Tab 结构</b>：首页 ／ AI 影视（原作品列表，全部作品收在这里）／ IP 工坊（IP 业务 + 样板案例）／ AI Tech（自研技术栈）</li>
       <li><b>联系页取消独立 Tab</b>：统一改为<b>每一页底部联系区</b>（首页 + 四个 Tab 页底部都有）</li>
-      <li><b>分类筛选</b>：AI 影视页内保留 全部 / AI 影视 / IP / 商业广告 / 自有 IP 筛选 + AIGC 主导·实拍+AI 标签</li>
+      <li><b>AI 影视页结构</b>：对齐参考 W2–W4 纵向分组（组头+计数+简介+组内筛选 chip）+ 3:4 大卡栅格（桌面 4 列 / 手机 2 列）+ 在制项目 COMING SOON 灰卡</li>
       <li><b>导演墙 / 时间线 / 案例样板</b>：按 v2 已确认决策保留（S10 位置提案 · 时间线只写一句话 · 万花世界+凡人修仙传双样板）</li>
       <li><b>不放图</b>：本版只验证板块、UI、UED 与文案位置</li>
     </ul>
@@ -400,57 +400,97 @@
 
 <!-- ================================================== TAB 2 AI 影视 -->
 <section class="sheet" id="pg-film">
+<style>
+  .chip.on{border-color:var(--grn);color:var(--grn);background:var(--grn-dim)}
+  .ghead{display:flex;align-items:baseline;gap:12px}
+  .gh{font-size:clamp(24px,3.4vw,40px);font-weight:800;letter-spacing:-.01em}
+  .gcount{color:var(--grn);font-size:14px;font-weight:700}
+  .gintro{color:var(--sub);font-size:14px;max-width:560px;margin:8px 0 12px}
+  .gchips{display:flex;gap:8px;flex-wrap:wrap}
+  .gchips .chip{cursor:pointer;font-size:12px;padding:5px 12px}
+  .ggrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:16px}
+  .frame.mob .ggrid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .gcard{display:flex;flex-direction:column;gap:6px}
+  .gcard .gmedia{aspect-ratio:3/4;border:1.5px dashed var(--dash);border-radius:12px;background:var(--blk2);display:flex;align-items:center;justify-content:center;text-align:center;color:var(--mut);font-size:11px;padding:8px}
+  .gcard .gtitle{font-size:15px;font-weight:700}
+  .gcard .gcap{font-size:11px;color:var(--mut);line-height:1.5}
+  .gcard.soon{opacity:.5}
+</style>
+
   <div class="blk phead">
-    <span class="tag">F1 · 页头<em>原「作品列表」更名 · 全部作品收在本 Tab</em></span>
+    <span class="tag">F1 · 页头<em>超大字 · 无简介（对齐参考 W1）</em></span>
     <div class="crumb">AI Film · 作品库</div>
     <div class="h-xl" data-zh="AI 影视" data-en="AI Film">AI 影视</div>
-    <div class="row" style="margin-top:10px"><span class="chip">20+ 案例 · 含商业广告 · 持续更新</span></div>
   </div>
 
-  <div class="blk">
-    <span class="tag">F2 · 分类筛选<em>四大分类 + 全部 · 点击筛选即本交互</em></span>
-    <div class="ftabs" id="ftabs">
-      <button class="ftab on" data-cat="all">全部 <small>20</small></button>
-      <button class="ftab" data-cat="film">AI 影视 <small>3</small></button>
-      <button class="ftab" data-cat="ip">IP <small>1+</small></button>
-      <button class="ftab" data-cat="ad">商业广告 <small>13</small></button>
-      <button class="ftab" data-cat="own">自有 IP <small>3</small></button>
+  <!-- 分组① AI 影视 -->
+  <div class="blk" id="grp-film">
+    <span class="tag">F2 · 分组①<em>对齐参考 W2 · 组头 + 计数 + 简介 + 组内筛选 chip</em></span>
+    <div class="ghead"><span class="gh">AI 影视</span><span class="gcount">( 2 + 2 )</span></div>
+    <p class="gintro">AI+实拍的剧集与院线电影。导演级 AI 管线，影视级交付——观众看到的是电影，不是「AI 味」。</p>
+    <div class="gchips">
+      <span class="chip on">剧集 ×</span><span class="chip on">院线电影 ×</span><span class="chip">先导片</span><span class="chip">保密项目</span>
     </div>
-    <div class="row" style="margin-top:12px">
-      <span class="lbl">商业广告二级筛选：</span>
-      <button class="ftab on" style="padding:5px 12px;font-size:11px">全部</button>
-      <button class="ftab" style="padding:5px 12px;font-size:11px">AIGC 主导</button>
-      <button class="ftab" style="padding:5px 12px;font-size:11px">实拍 + AI</button>
-      <span class="lbl" style="margin-left:auto">行业：互联网 / 出海 / 汽车 / 快消 / 科技 / 游戏</span>
+    <div class="ggrid">
+      <div class="gcard" data-tags="ai"><div class="gmedia">封面占位 · 3:4 剧照<br>万花世界</div><div class="gtitle">万花世界</div><div class="gcap">鞠婧祎 × 恒星引力 × 腾讯视频<br>国内首部 AI+实拍剧集</div></div>
+      <div class="gcard" data-tags="ai"><div class="gmedia">封面占位 · 氛围图<br>长生天</div><div class="gtitle">长生天</div><div class="gcap">院线电影 · 保密项目<br>2026 筹备中</div></div>
+      <div class="gcard soon" data-tags="ai"><div class="gmedia">封面占位<br>COMING SOON</div><div class="gtitle">平台 S+ 级剧集</div><div class="gcap">超级 IP 影视化 · 保密<br>2026 Q4</div></div>
+      <div class="gcard soon" data-tags="ai"><div class="gmedia">封面占位<br>COMING SOON</div><div class="gtitle">新院线项目</div><div class="gcap">与头部导演团队筹备中<br>2026 Q3</div></div>
+    </div>
+    <div class="lbl" style="margin-top:10px">🖥 L2 四列 ／ 📱 L1 两列 · 整卡可点 · 灰卡 = 在制项目（参考 W4 的 COMING SOON 手法）</div>
+  </div>
+
+  <!-- 分组② IP -->
+  <div class="blk" id="grp-ip">
+    <span class="tag">F3 · 分组②<em>同页第二分组（对齐参考 W3）</em></span>
+    <div class="ghead"><span class="gh">IP</span><span class="gcount">( 1 + )</span></div>
+    <p class="gintro">头部 IP 的资产开发与商业化。完整业务介绍与案例版式见「IP 工坊」Tab。</p>
+    <div class="ggrid" style="grid-template-columns:repeat(2,1fr)">
+      <div class="gcard g2ip"><div class="gmedia">封面占位 · 凡人修仙传</div><div class="gtitle">凡人修仙传 · IP 资产开发</div><div class="gcap">万维猫动画 · 65.8 亿播放 · 追番 1699 万</div></div>
+      <div class="gcard g2ip"><div class="gmedia">封面占位 · 预留</div><div class="gtitle">更多 IP 合作案例</div><div class="gcap">持续更新中 → 去 IP 工坊</div></div>
     </div>
   </div>
 
-  <div class="blk">
-    <span class="tag">F3 · 案例网格<em>3 列 · 卡片 = 封面 + 标题 + 客户 + 标签 · 点击进入案例详情（样板见 IP 工坊 Tab）</em></span>
-    <div class="wgrid" id="wgrid">
-      <div class="wcard" data-cat="film"><div class="ph">封面占位 · 万花世界</div><div class="w"><b>万花世界</b><span class="lbl">鞠婧祎 × 恒星引力 × 腾讯视频</span><div class="chips"><span class="chip ai">AI 影视</span><span class="chip">剧集</span></div></div></div>
-      <div class="wcard" data-cat="film"><div class="ph">封面占位 · 氛围图</div><div class="w"><b>长生天</b><span class="lbl">院线电影 · 保密项目</span><div class="chips"><span class="chip ai">AI 影视</span><span class="chip tbd">2026</span></div></div></div>
-      <div class="wcard" data-cat="film"><div class="ph">封面占位</div><div class="w"><b>优酷 S+ 级剧集</b><span class="lbl">超级 IP 影视化 · 保密项目</span><div class="chips"><span class="chip ai">AI 影视</span><span class="chip tbd">2026Q4</span></div></div></div>
-      <div class="wcard" data-cat="ip"><div class="ph">封面占位 · 凡人修仙传</div><div class="w"><b>凡人修仙传 · IP 资产开发</b><span class="lbl">万维猫动画 · COSMOS LAB 垂类 Agent</span><div class="chips"><span class="chip ai">IP</span><span class="chip">65.8 亿播放</span></div></div></div>
-      <div class="wcard" data-cat="ip"><div class="ph">封面占位 · 预留</div><div class="w"><b>更多 IP 合作案例</b><span class="lbl">持续更新中</span><div class="chips"><span class="chip tbd">占位</span></div></div></div>
-      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>美团外卖 × 李诞《蛋的旅行》</b><span class="lbl">创意短片 · 美团</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">互联网</span></div></div></div>
-      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>美团虚拟人 · 首部 MV</b><span class="lbl">虚拟人打造 · 美团</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">互联网</span></div></div></div>
-      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>美团外卖 × 故宫博物院 · 七夕</b><span class="lbl">天生成双 · 美团</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">互联网</span></div></div></div>
-      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>美团外卖 · 世界杯热点篇</b><span class="lbl">热点营销 · 美团</span><div class="chips"><span class="chip">商业广告</span><span class="chip">实拍 + AI</span><span class="chip">互联网</span></div></div></div>
-      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>TECNO CAMON 50 × 张艺兴</b><span class="lbl">出海 TVC · 传音</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">出海</span></div></div></div>
-      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>传音海外产品 TVC</b><span class="lbl">出海 · 传音</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">出海</span></div></div></div>
-      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>特斯拉 Model S 概念片</b><span class="lbl">概念视觉 · 特斯拉</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">汽车</span></div></div></div>
-      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>特斯拉 Model S 城市功能片</b><span class="lbl">功能演示 · 特斯拉</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">汽车</span></div></div></div>
-      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>奥妙 × 吴磊 TVC</b><span class="lbl">快消 · 联合利华</span><div class="chips"><span class="chip">商业广告</span><span class="chip">实拍 + AI</span><span class="chip">快消</span></div></div></div>
-      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>奥妙 × 樊振东 TVC</b><span class="lbl">快消 · 联合利华</span><div class="chips"><span class="chip">商业广告</span><span class="chip">实拍 + AI</span><span class="chip">快消</span></div></div></div>
-      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>伊利金典有机奶</b><span class="lbl">呼伦贝尔草原牧场篇</span><div class="chips"><span class="chip">商业广告</span><span class="chip">实拍 + AI</span><span class="chip">快消</span></div></div></div>
-      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>木九十产品 TVC</b><span class="lbl">眼镜品牌 · 木九十</span><div class="chips"><span class="chip">商业广告</span><span class="chip">实拍 + AI</span><span class="chip">科技</span></div></div></div>
-      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>易森动力 Ethan Global</b><span class="lbl">品牌视觉 · 易森动力</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">科技</span></div></div></div>
-      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>王者荣耀 · 角色亮相片</b><span class="lbl">游戏 · 腾讯游戏</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">游戏</span></div></div></div>
-      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>原神 · 品牌影片</b><span class="lbl">游戏 · 米哈游</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">游戏</span></div></div></div>
-      <div class="wcard" data-cat="own"><div class="ph">封面占位 · DREAMLESS</div><div class="w"><b>无梦者 DREAMLESS</b><span class="lbl">自有 AI 电影 · 蔺宇涵 LIN</span><div class="chips"><span class="chip new">自有 IP</span></div></div></div>
-      <div class="wcard" data-cat="own"><div class="ph">封面占位</div><div class="w"><b>非相之界</b><span class="lbl">自有 AI 剧集 · 蔺宇涵 LIN</span><div class="chips"><span class="chip new">自有 IP</span></div></div></div>
-      <div class="wcard" data-cat="own"><div class="ph">封面占位</div><div class="w"><b>ZORA</b><span class="lbl">AI 虚拟偶像 · 逛与宙自研</span><div class="chips"><span class="chip new">自有 IP</span></div></div></div>
+  <!-- 分组③ 商业广告 -->
+  <div class="blk" id="grp-ad">
+    <span class="tag">F4 · 分组③<em>对齐参考 W2 筛选交互 · chip 点击真实过滤本组卡片</em></span>
+    <div class="ghead"><span class="gh">商业广告</span><span class="gcount">( 15 )</span></div>
+    <p class="gintro">从 TVC 到虚拟人，品牌内容的 AI 升级。服务美团、特斯拉、联合利华、传音、腾讯游戏等 60+ 品牌。</p>
+    <div class="gchips">
+      <span class="chip on" data-f="all">全部</span>
+      <span class="chip" data-f="ai">AIGC 主导</span>
+      <span class="chip" data-f="real">实拍 + AI</span>
+      <span class="lbl" style="align-self:center">行业：互联网 / 出海 / 汽车 / 快消 / 科技 / 游戏</span>
+    </div>
+    <div class="ggrid">
+      <div class="gcard" data-tags="ai"><div class="gmedia">封面占位</div><div class="gtitle">美团外卖 × 李诞《蛋的旅行》</div><div class="gcap">创意短片 · 美团 · AIGC 主导</div></div>
+      <div class="gcard" data-tags="ai"><div class="gmedia">封面占位</div><div class="gtitle">美团虚拟人 · 首部 MV</div><div class="gcap">虚拟人打造 · 美团 · AIGC 主导</div></div>
+      <div class="gcard" data-tags="ai"><div class="gmedia">封面占位</div><div class="gtitle">美团 × 故宫博物院 · 七夕</div><div class="gcap">天生成双 · 美团 · AIGC 主导</div></div>
+      <div class="gcard" data-tags="real"><div class="gmedia">封面占位</div><div class="gtitle">美团外卖 · 世界杯热点篇</div><div class="gcap">热点营销 · 美团 · 实拍 + AI</div></div>
+      <div class="gcard" data-tags="ai"><div class="gmedia">封面占位</div><div class="gtitle">TECNO CAMON 50 × 张艺兴</div><div class="gcap">出海 TVC · 传音 · AIGC 主导</div></div>
+      <div class="gcard" data-tags="ai"><div class="gmedia">封面占位</div><div class="gtitle">传音海外产品 TVC</div><div class="gcap">出海 · 传音 · AIGC 主导</div></div>
+      <div class="gcard" data-tags="ai"><div class="gmedia">封面占位</div><div class="gtitle">特斯拉 Model S 概念片</div><div class="gcap">概念视觉 · 特斯拉 · AIGC 主导</div></div>
+      <div class="gcard" data-tags="ai"><div class="gmedia">封面占位</div><div class="gtitle">特斯拉 Model S 城市功能片</div><div class="gcap">功能演示 · 特斯拉 · AIGC 主导</div></div>
+      <div class="gcard" data-tags="real"><div class="gmedia">封面占位</div><div class="gtitle">奥妙 × 吴磊 TVC</div><div class="gcap">快消 · 联合利华 · 实拍 + AI</div></div>
+      <div class="gcard" data-tags="real"><div class="gmedia">封面占位</div><div class="gtitle">奥妙 × 樊振东 TVC</div><div class="gcap">快消 · 联合利华 · 实拍 + AI</div></div>
+      <div class="gcard" data-tags="real"><div class="gmedia">封面占位</div><div class="gtitle">伊利金典有机奶</div><div class="gcap">草原牧场篇 · 实拍 + AI</div></div>
+      <div class="gcard" data-tags="real"><div class="gmedia">封面占位</div><div class="gtitle">木九十产品 TVC</div><div class="gcap">眼镜品牌 · 实拍 + AI</div></div>
+      <div class="gcard" data-tags="ai"><div class="gmedia">封面占位</div><div class="gtitle">王者荣耀 · 角色亮相片</div><div class="gcap">游戏 · 腾讯游戏 · AIGC 主导</div></div>
+      <div class="gcard" data-tags="ai"><div class="gmedia">封面占位</div><div class="gtitle">原神 · 品牌影片</div><div class="gcap">游戏 · 米哈游 · AIGC 主导</div></div>
+      <div class="gcard" data-tags="ai"><div class="gmedia">封面占位</div><div class="gtitle">易森动力 Ethan Global</div><div class="gcap">品牌视觉 · 科技 · AIGC 主导</div></div>
+    </div>
+  </div>
+
+  <!-- 分组④ 自有 IP -->
+  <div class="blk" id="grp-own">
+    <span class="tag">F5 · 分组④<em>AIGC 是过程，IP 是结果</em></span>
+    <div class="ghead"><span class="gh">自有 IP</span><span class="gcount">( 3 + 1 )</span></div>
+    <p class="gintro">自研 AI 电影、剧集与虚拟偶像。自己的 IP 自己孵化，2027 起陆续上线海内外平台。</p>
+    <div class="ggrid">
+      <div class="gcard" data-tags="ai"><div class="gmedia">封面占位 · DREAMLESS</div><div class="gtitle">无梦者 DREAMLESS</div><div class="gcap">自有 AI 电影 · 蔺宇涵 LIN</div></div>
+      <div class="gcard" data-tags="ai"><div class="gmedia">封面占位</div><div class="gtitle">非相之界</div><div class="gcap">自有 AI 剧集 · 蔺宇涵 LIN</div></div>
+      <div class="gcard" data-tags="ai"><div class="gmedia">封面占位</div><div class="gtitle">ZORA</div><div class="gcap">AI 虚拟偶像 · 逛与宙自研</div></div>
+      <div class="gcard soon" data-tags="ai"><div class="gmedia">封面占位<br>COMING SOON</div><div class="gtitle">新 IP 孵化中</div><div class="gcap">2027 Q1 起陆续上线</div></div>
     </div>
   </div>
 
@@ -692,17 +732,22 @@
       el.textContent=en?el.dataset.en:el.dataset.zh;
     });
   })});
-  var ftabs=document.querySelectorAll('#ftabs .ftab'),wcards=document.querySelectorAll('#wgrid .wcard');
-  ftabs.forEach(function(t){t.addEventListener('click',function(){
-    ftabs.forEach(function(x){x.classList.remove('on')});t.classList.add('on');
-    var c=t.dataset.cat;
-    wcards.forEach(function(w){w.style.display=(c==='all'||w.dataset.cat===c)?'flex':'none'});
-  })});
+  // 组内筛选 chip（对齐参考 W2：选中金边，点击真实过滤本组卡片）
+  document.querySelectorAll('.gchips .chip[data-f]').forEach(function(ch){
+    ch.addEventListener('click',function(){
+      var g=ch.closest('.blk'),f=ch.dataset.f;
+      g.querySelectorAll('.gchips .chip').forEach(function(x){x.classList.remove('on')});
+      ch.classList.add('on');
+      g.querySelectorAll('.gcard[data-tags]').forEach(function(c){
+        c.style.display=(f==='all'||c.dataset.tags===f)?'flex':'none';
+      });
+    });
+  });
 
   /* ===== 演示版交互接线（分享体验用） ===== */
-  function switchTab(name,filter){
+  function switchTab(name,anchor){
     document.querySelector('#pageGrp [data-page="'+name+'"]').click();
-    if(filter){var fb=document.querySelector('#ftabs [data-cat="'+filter+'"]');if(fb)fb.click();}
+    if(anchor){setTimeout(function(){var t=document.getElementById(anchor);if(t)t.scrollIntoView({behavior:'smooth',block:'start'});},80);}
   }
   function scrollContact(){
     var c=document.querySelector('.sheet.on .contact-ft');
@@ -738,15 +783,15 @@
     card.addEventListener('click',function(){
       var t=(card.textContent||'');
       if(t.indexOf('IP 工坊')>-1)switchTab('ip');
-      else if(t.indexOf('自有 IP')>-1)switchTab('film','own');
-      else switchTab('film','all');
+      else if(t.indexOf('自有 IP')>-1)switchTab('film','grp-own');
+      else switchTab('film');
     });
   });
   // S7 四联按钮
   var quadBtns=document.querySelectorAll('.quad .qcell .btnw');
   var quadGo=['film','ip','tech','own'];
   quadBtns.forEach(function(b,i){b.addEventListener('click',function(){
-    if(quadGo[i]==='own')switchTab('film','own');else switchTab(quadGo[i]);
+    if(quadGo[i]==='own')switchTab('film','grp-own');else switchTab(quadGo[i]);
   })});
   // S10 查看全部导演
   document.querySelector('.dirs').closest('.blk').querySelector('.btnw').addEventListener('click',function(){
@@ -754,25 +799,24 @@
   });
   // 所有「发起合作」→ 滚到本页联系区
   document.querySelectorAll('.contact-ft .btnw').forEach(function(b){b.addEventListener('click',scrollContact)});
-  // AI 影视：案例卡 → 案例详情弹窗（版式样板）
-  wcards.forEach(function(w){
-    w.style.cursor='pointer';
+  // AI 影视：案例卡 → 案例详情弹窗（版式样板）；在制灰卡 → COMING SOON 提示
+  document.querySelectorAll('#pg-film .gcard').forEach(function(w){
     w.addEventListener('click',function(){
-      if(w.dataset.cat==='ip'){switchTab('ip');return;}
-      var title=w.querySelector('b').textContent,client=w.querySelector('.lbl').textContent;
-      var chips=[].map.call(w.querySelectorAll('.chip'),function(c){return c.textContent}).join(' · ');
+      if(w.classList.contains('soon')){openModal('Coming Soon','<p class="lbl">该项目处于保密或筹备阶段，正式上线后展示案例详情。这种「在制灰卡」是参考站 W4 的常用手法，制造「还在生长」的信任感。</p>');return;}
+      if(w.classList.contains('g2ip')){switchTab('ip');return;}
+      var title=w.querySelector('.gtitle').textContent,cap=w.querySelector('.gcap').textContent;
       openModal('案例详情 · '+title,
         '<div class="ph" style="aspect-ratio:16/9;min-height:0;margin-bottom:12px">视频封面占位 · 点击播放正片</div>'+
-        '<div class="m-meta"><div><span>客户</span><b>'+client+'</b></div><div><span>标签</span><b>'+chips+'</b></div><div><span>参数表</span><b>6 格（见 IP 工坊样板）</b></div></div>'+
+        '<div class="m-meta"><div><span>客户 / 信息</span><b>'+cap+'</b></div><div><span>参数表</span><b>6 格（见 IP 工坊样板）</b></div><div><span>过程稿</span><b>四格对比条带</b></div></div>'+
         '<p class="lbl" style="margin-top:12px">版式样板见「IP 工坊」Tab 的凡人修仙传案例：参数表 → 三段叙事 → 过程稿四格 → Credits。每个案例配「一句话需求 + 三句过程」即可批量填充。</p>'+
         '<div class="row" style="margin-top:12px"><a class="btnw" id="mNext">看下一个案例 →<i>BTN</i></a></div>');
       var nb=modal.querySelector('#mNext');
-      if(nb)nb.addEventListener('click',function(){modal.classList.remove('open');switchTab('film')});
+      if(nb)nb.addEventListener('click',function(){modal.classList.remove('open');switchTab('film','grp-film')});
     });
   });
   // IP 工坊 I7 → AI 影视
   var ipNext=document.querySelector('#pg-ip .nextcase .btnw');
-  if(ipNext)ipNext.addEventListener('click',function(){switchTab('film','film')});
+  if(ipNext)ipNext.addEventListener('click',function(){switchTab('film','grp-film')});
 </script>
 <style>
   #demoModal{display:none;position:fixed;inset:0;z-index:999}
