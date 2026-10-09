@@ -206,6 +206,24 @@
   .cta{text-align:center;padding:34px 28px;display:flex;flex-direction:column;gap:16px;align-items:center}
 
   footer.wfoot{border-top:1px solid var(--line);padding:16px 28px;display:flex;justify-content:space-between;gap:10px;font-size:11px;color:var(--mut);flex-wrap:wrap}
+
+  /* ===== 正式站点导航 ===== */
+  .sitenav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 28px;border-bottom:1px solid var(--line);background:var(--blk);position:sticky;top:0;z-index:50}
+  .sitenav .sn-brand b{font-size:15px;font-weight:800}
+  .sitenav .sn-brand span{font-size:9.5px;color:var(--mut);letter-spacing:.2em;margin-left:8px}
+  .sn-tabs{display:flex;gap:4px}
+  .sn-tabs button{border:none;background:none;color:var(--sub);font-size:13px;font-weight:600;padding:8px 16px;border-radius:999px;cursor:pointer;font-family:inherit}
+  .sn-tabs button.on{color:var(--grn);background:var(--grn-dim);box-shadow:inset 0 0 0 1px var(--grn)}
+  .sn-cta{padding:8px 18px;font-size:12.5px;cursor:pointer}
+  .tabbar{display:none}
+  .frame.mob .sitenav{padding:12px 16px}
+  .frame.mob .sn-tabs{display:none}
+  .frame.mob{padding-bottom:62px}
+  .frame.mob .tabbar{display:block;position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(13,13,17,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  .tabbar-in{display:flex;max-width:480px;margin:0 auto;width:100%}
+  .tabbar-in button{flex:1;border:none;background:none;color:var(--mut);font-size:10px;font-weight:600;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 0;cursor:pointer}
+  .tabbar-in button .ic{font-size:17px;line-height:1}
+  .tabbar-in button.on{color:var(--grn)}
 </style>
 </head>
 <body>
@@ -234,6 +252,26 @@
 
 <div class="stage">
 <div class="frame" id="frame">
+
+<!-- ============ 正式站点导航：桌面顶部导航栏 / 手机底部 Tab 栏 ============ -->
+<div class="sitenav">
+  <div class="sn-brand"><b>逛与宙 AI Lab</b><span>COSMOS AI</span></div>
+  <nav class="sn-tabs">
+    <button class="on" data-nav="home">首页</button>
+    <button data-nav="film">AI 影视</button>
+    <button data-nav="ip">IP 工坊</button>
+    <button data-nav="tech">AI Tech</button>
+  </nav>
+  <a class="btnw sn-cta" data-nav-cta>发起合作 →</a>
+</div>
+<nav class="tabbar">
+  <div class="tabbar-in">
+    <button class="on" data-nav="home"><span class="ic">⌂</span>首页</button>
+    <button data-nav="film"><span class="ic">▶</span>AI 影视</button>
+    <button data-nav="ip"><span class="ic">✦</span>IP 工坊</button>
+    <button data-nav="tech"><span class="ic">⌘</span>AI Tech</button>
+  </div>
+</nav>
 
 <!-- ================================================== TAB 1 首页 -->
 <section class="sheet on" id="pg-home">
@@ -690,10 +728,23 @@
 
 <script>
   var pgs=document.querySelectorAll('#pageGrp button'),sheets=document.querySelectorAll('.sheet');
+  function navSync(name){
+    document.querySelectorAll('.sn-tabs button').forEach(function(b){b.classList.toggle('on',b.dataset.nav===name)});
+    document.querySelectorAll('.tabbar-in button').forEach(function(b){b.classList.toggle('on',b.dataset.nav===name)});
+  }
+  document.querySelectorAll('[data-nav]').forEach(function(b){b.addEventListener('click',function(){
+    var pb=document.querySelector('#pageGrp [data-page="'+b.dataset.nav+'"]');if(pb)pb.click();
+  })});
+  var snCta=document.querySelector('[data-nav-cta]');
+  if(snCta)snCta.addEventListener('click',function(){
+    var on=document.querySelector('.sheet.on');var c=on&&on.querySelector('.contact-ft');
+    if(c){c.scrollIntoView({behavior:'smooth',block:'start'})}
+  });
   pgs.forEach(function(b){b.addEventListener('click',function(){
     pgs.forEach(function(x){x.classList.remove('on')});b.classList.add('on');
     sheets.forEach(function(s){s.classList.remove('on')});
     document.getElementById('pg-'+b.dataset.page).classList.add('on');
+    navSync(b.dataset.page);
     window.scrollTo({top:0});
   })});
   var vps=document.querySelectorAll('#vpGrp button'),frame=document.getElementById('frame');
