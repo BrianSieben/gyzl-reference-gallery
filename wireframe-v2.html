@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>逛与宙 AI Lab · 适配框架线稿 v2（无图版原型）</title>
+<style>
+  :root{
+    --bg:#0b0b0e; --frame:#101014; --blk:#15151b; --blk2:#1a1a22;
+    --line:#26262f; --dash:#3a3a46; --txt:#ececee; --sub:#9a9aa4; --mut:#6b6b76;
+    --grn:#00e676; --grn-dim:rgba(0,230,118,.1); --amb:#ffc857; --amb-dim:rgba(255,200,87,.1);
+    --blu:#6ea8ff; --blu-dim:rgba(110,168,255,.1); --red:#ff7a7a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;font-size:14px}
+
+  /* ===== 顶栏控制区 ===== */
+  .ctrl{position:sticky;top:0;z-index:99;background:rgba(11,11,14,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .ctrl-in{max-width:1280px;margin:0 auto;padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .ctrl .brand{font-weight:800;font-size:15px;margin-right:8px;white-space:nowrap}
+  .ctrl .brand small{display:block;font-size:10px;color:var(--mut);font-weight:500;letter-spacing:.14em}
+  .grp{display:flex;gap:4px;background:var(--blk);border:1px solid var(--line);border-radius:999px;padding:3px}
+  .grp button{border:none;background:none;color:var(--mut);font-size:12.5px;font-weight:600;padding:6px 14px;border-radius:999px;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .grp button.on{background:var(--grn-dim);color:var(--grn)}
+  .legend{margin-left:auto;font-size:11px;color:var(--mut);display:flex;gap:10px;flex-wrap:wrap}
+  .legend b{color:var(--sub);font-weight:600}
+  .lg{display:inline-flex;align-items:center;gap:4px}
+  .sw{display:inline-block;width:10px;height:10px;border-radius:3px}
+
+  .decisions{max-width:1280px;margin:14px auto 0;padding:0 16px}
+  .decisions details{background:var(--blk);border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:12.5px;color:var(--sub)}
+  .decisions summary{cursor:pointer;font-weight:700;color:var(--txt);font-size:13px}
+  .decisions li{margin:4px 0 4px 18px}
+  .decisions li b{color:var(--grn)}
+
+  /* ===== 画布与外框 ===== */
+  .stage{max-width:1280px;margin:16px auto 80px;padding:0 16px}
+  .frame{width:1200px;max-width:100%;margin:0 auto;background:var(--frame);border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:width .3s ease}
+  .frame.mob{width:390px}
+  .sheet{display:none}
+  .sheet.on{display:block}
+
+  /* ===== 通用线框块 ===== */
+  .blk{position:relative;background:var(--blk);border-bottom:1px solid var(--line);padding:26px 28px}
+  .frame.mob .blk{padding:18px 16px}
+  .tag{display:inline-flex;gap:8px;align-items:baseline;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--grn);margin-bottom:14px;font-family:ui-monospace,Consolas,monospace}
+  .tag em{font-style:normal;color:var(--mut);font-weight:500;letter-spacing:0;font-family:inherit}
+  .ph{border:1.5px dashed var(--dash);border-radius:10px;background:var(--blk2);color:var(--mut);display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;padding:20px;min-height:90px}
+  .ph.small{min-height:56px;padding:12px}
+  .btnw{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--grn);color:var(--grn);border-radius:999px;padding:9px 20px;font-size:13px;font-weight:600}
+  .btnw i{font-style:normal;font-size:9.5px;font-weight:800;border:1px solid rgba(0,230,118,.5);border-radius:4px;padding:1px 5px;letter-spacing:.08em}
+  .btnw.ghost{border-color:var(--dash);color:var(--sub)}
+  .btnw.ghost i{border-color:var(--dash);color:var(--mut)}
+  .chip{display:inline-block;font-size:10.5px;font-weight:700;border-radius:999px;padding:3px 10px;border:1px solid var(--line);color:var(--sub);background:var(--blk2)}
+  .chip.ai{color:var(--grn);border-color:rgba(0,230,118,.35);background:var(--grn-dim)}
+  .chip.tbd{color:var(--amb);border-color:rgba(255,200,87,.35);background:var(--amb-dim)}
+  .chip.new{color:var(--blu);border-color:rgba(110,168,255,.35);background:var(--blu-dim)}
+  .lbl{font-size:11.5px;color:var(--mut)}
+  .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .grow{flex:1;min-width:0}
+
+  .h-xl{font-size:clamp(26px,4.6vw,44px);font-weight:800;line-height:1.25;letter-spacing:.01em}
+  .frame.mob .h-xl{font-size:26px}
+  .h-lg{font-size:clamp(19px,2.6vw,26px);font-weight:800}
+  .body{color:var(--sub);font-size:13.5px;max-width:640px}
+  .kicker{font-size:11px;letter-spacing:.2em;color:var(--grn);font-weight:700;text-transform:uppercase}
+
+  /* ===== S1 HERO ===== */
+  .hero{min-height:520px;display:flex;flex-direction:column;justify-content:flex-end;gap:14px;padding-bottom:40px}
+  .frame.mob .hero{min-height:480px}
+  .hero .ph{position:absolute;inset:0;border:none;border-radius:0;min-height:0}
+  .hero .inner{position:relative;z-index:2;display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+
+  /* ===== LOGO 墙 ===== */
+  .logos{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+  .frame.mob .logos{grid-template-columns:repeat(3,1fr)}
+  .logos .ph{min-height:52px;font-size:11px;padding:8px}
+
+  /* ===== 轮播卡 ===== */
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .frame.mob .cards{grid-template-columns:repeat(4,minmax(200px,1fr));overflow-x:auto;padding-bottom:6px}
+  .ccard{display:flex;flex-direction:column;gap:8px}
+  .ccard .ph{aspect-ratio:16/10;min-height:0;padding:8px;font-size:11px}
+  .ccard b{font-size:13px}
+  .ccard .lbl{font-size:11px}
+
+  /* ===== S3 浅底换气区 ===== */
+  .light{background:#e9e9ec;color:#111}
+  .light .tag{color:#0a8f4e}
+  .light .tag em{color:#777}
+  .light .body{color:#444}
+
+  /* ===== S6 长文 ===== */
+  .ethos p{font-size:15px;max-width:680px;margin-top:10px}
+  .ethos p b{color:var(--txt)}
+
+  /* ===== S7 四联 ===== */
+  .quad{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .frame.mob .quad{grid-template-columns:1fr 1fr}
+  .qcell{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--blk2);display:flex;flex-direction:column;gap:8px}
+  .qcell .no{font-size:22px;font-weight:800;color:var(--grn);font-family:ui-monospace,Consolas,monospace}
+  .qcell b{font-size:14px}
+  .qcell .lbl{font-size:11.5px}
+  .qcell .ph{min-height:64px;font-size:10.5px;padding:8px}
+
+  /* ===== S8 宣言 ===== */
+  .mantra{text-align:center;padding:64px 28px}
+  .mantra .h-xl{max-width:900px;margin:0 auto}
+
+  /* ===== S9 数字 ===== */
+  .nums{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  .frame.mob .nums{grid-template-columns:repeat(2,1fr)}
+  .num{border-top:2px solid var(--grn);padding-top:12px}
+  .num b{display:block;font-size:30px;font-weight:800;color:var(--grn)}
+  .frame.mob .num b{font-size:24px}
+  .num span{font-size:11.5px;color:var(--sub)}
+
+  /* ===== S10 导演墙 ===== */
+  .dirs{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  .frame.mob .dirs{grid-template-columns:repeat(5,minmax(150px,1fr));overflow-x:auto;padding-bottom:6px}
+  .dir{border:1px solid var(--line);border-radius:12px;background:var(--blk2);overflow:hidden}
+  .dir .ph{border:none;border-bottom:1.5px dashed var(--dash);border-radius:0;aspect-ratio:3/4;min-height:0;font-size:10.5px}
+  .dir .d{padding:10px 12px}
+  .dir b{font-size:13px;display:block}
+  .dir .lbl{font-size:10.5px;display:block;margin-top:2px}
+
+  /* ===== S11 时间线 ===== */
+  .tl{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+  .frame.mob .tl{grid-template-columns:1fr 1fr}
+  .tl .qcell .no{font-size:13px}
+  .press .ph{min-height:44px;font-size:11px;padding:10px}
+
+  /* ===== S12 CTA ===== */
+  .cta{text-align:center;padding:56px 28px;display:flex;flex-direction:column;gap:16px;align-items:center}
+
+  /* ===== 页头（作品/详情/联系） ===== */
+  .phead{padding:44px 28px 22px}
+  .frame.mob .phead{padding:32px 16px 16px}
+  .phead .h-xl{font-size:clamp(34px,7vw,64px)}
+  .crumb{font-size:11px;color:var(--mut);letter-spacing:.14em;text-transform:uppercase}
+
+  /* ===== 作品页 ===== */
+  .ftabs{display:flex;gap:6px;flex-wrap:wrap}
+  .frame.mob .ftabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+  .ftab{border:1px solid var(--line);background:var(--blk2);color:var(--sub);border-radius:999px;padding:8px 16px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .ftab.on{border-color:var(--grn);color:var(--grn);background:var(--grn-dim)}
+  .ftab small{opacity:.6;font-weight:500}
+  .wgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .frame.mob .wgrid{grid-template-columns:1fr}
+  .wcard{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--blk2);display:flex;flex-direction:column}
+  .wcard .ph{border:none;border-bottom:1.5px dashed var(--dash);border-radius:0;aspect-ratio:16/9;min-height:0}
+  .wcard .w{padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+  .wcard b{font-size:14px}
+  .wcard .chips{display:flex;gap:6px;flex-wrap:wrap}
+
+  /* ===== 详情页 ===== */
+  .param{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+  .frame.mob .param{grid-template-columns:1fr 1fr}
+  .pcell{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--blk2)}
+  .pcell span{font-size:10.5px;color:var(--mut);display:block;letter-spacing:.08em}
+  .pcell b{font-size:13.5px}
+  .p4grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .frame.mob .p4grid{grid-template-columns:1fr}
+  .p4grid .col b.t{display:block;font-size:13px;color:var(--grn);margin-bottom:6px;letter-spacing:.06em}
+  .p4grid .col p{font-size:13px;color:var(--sub)}
+  .proc{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .frame.mob .proc{grid-template-columns:1fr 1fr}
+  .proc .ph{aspect-ratio:4/3;min-height:0;font-size:10.5px}
+  .credits{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 20px}
+  .frame.mob .credits{grid-template-columns:1fr 1fr}
+  .credits div{font-size:12.5px;color:var(--sub);border-bottom:1px dashed var(--line);padding:6px 0}
+  .credits b{color:var(--txt);font-weight:600}
+  .nextcase{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .frame.mob .nextcase{grid-template-columns:1fr}
+  .nextcase .ph{border:none;min-height:150px}
+  .nextcase .w{padding:20px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+
+  /* ===== 联系页 ===== */
+  .cgrid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}
+  .frame.mob .cgrid{grid-template-columns:1fr}
+  .field{border:1.5px dashed var(--dash);border-radius:10px;padding:13px 14px;font-size:12.5px;color:var(--mut);background:var(--blk2);margin-bottom:10px;display:flex;justify-content:space-between;gap:10px}
+  .field i{font-style:normal;font-size:9.5px;font-weight:800;color:var(--grn);border:1px solid rgba(0,230,118,.4);border-radius:4px;padding:1px 5px;height:fit-content;letter-spacing:.08em}
+  .field i.opt{color:var(--mut);border-color:var(--dash)}
+
+  footer.wfoot{border-top:1px solid var(--line);padding:16px 28px;display:flex;justify-content:space-between;gap:10px;font-size:11px;color:var(--mut);flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<!-- ================= 控制区 ================= -->
+<div class="ctrl">
+  <div class="ctrl-in">
+    <div class="brand">逛与宙 · 适配框架线稿 v2<small>COSMOS AI · WIREFRAME / NO-IMAGE</small></div>
+    <div class="grp" id="pageGrp">
+      <button class="on" data-page="home">首页</button>
+      <button data-page="works">作品列表</button>
+      <button data-page="detail">案例详情</button>
+      <button data-page="contact">联系</button>
+    </div>
+    <div class="grp" id="vpGrp">
+      <button class="on" data-vp="d">🖥 桌面 L2</button>
+      <button data-vp="m">📱 手机 L1</button>
+    </div>
+    <div class="grp" id="langGrp">
+      <button class="on" data-lang="zh">中</button>
+      <button data-lang="en">EN</button>
+    </div>
+    <div class="legend">
+      <span class="lg"><span class="sw" style="border:1.5px dashed var(--dash);background:var(--blk2)"></span><b>虚线块</b>=图片/视频占位（本版不放图）</span>
+      <span class="lg"><span class="sw" style="border:1.5px solid var(--grn)"></span><b>绿框</b>=可点击 Button</span>
+    </div>
+  </div>
+</div>
+
+<div class="decisions">
+  <details>
+    <summary>📌 本版已确认的 6 项决策（2026-10-09 客户确认）</summary>
+    <ul>
+      <li><b>分类归拢</b>：作品页 = 全部 / AI 影视 / IP / 商业广告 / 自有 IP（第四预留类 = 自有 IP；IP 商业化 + IP 开发合并为 IP）</li>
+      <li><b>AI 边界</b>：商业广告案例按「AIGC 主导 / 实拍+AI」打标，模糊默认归 AIGC 主导</li>
+      <li><b>导演墙</b>：5 位签约导演放首页，位置待最终确认（本版置于 S9 数字区之后，见 S10）</li>
+      <li><b>时间线</b>：只写时间 + 一句话，保密项目不露出品方与 IP 名</li>
+      <li><b>案例详情</b>：样板先行（本版以《万花世界》为填充样板，其余案例同版式）</li>
+      <li><b>不放图</b>：本版只验证板块、UI、UED 与文案位置，图片/视频全部用虚线占位</li>
+    </ul>
+  </details>
+</div>
+
+<div class="stage">
+<div class="frame" id="frame">
+
+<!-- ================================================== 首页 -->
+<section class="sheet on" id="pg-home">
+
+  <!-- S1 HERO -->
+  <div class="blk hero">
+    <div class="ph">视频占位 · 万花世界 / 影视案例混剪 LOOP（满铺 100vh · muted · cover）</div>
+    <div class="inner">
+      <span class="tag">S1 · HERO 首屏<em>100vh · 视频满铺 · 内容贴底左对齐</em></span>
+      <div class="kicker" data-zh="COSMOS AI · AIGC + IP 内容型科技公司" data-en="COSMOS AI · AN AIGC + IP CONTENT STUDIO">COSMOS AI · AIGC + IP 内容型科技公司</div>
+      <div class="h-xl" data-zh="以 AI 赴万象，自在逛与宙" data-en="All realms. One AI. Roam free.">以 AI 赴万象，自在逛与宙</div>
+      <div class="body" data-zh="用 AI 重构内容生产方式，赋能 IP 商业化" data-en="Rebuilding content production with AI, unlocking IP commercialization.">用 AI 重构内容生产方式，赋能 IP 商业化</div>
+      <div class="row" style="margin-top:6px">
+        <a class="btnw">查看作品 →<i>BTN</i></a>
+        <a class="btnw ghost">联系合作<i>BTN</i></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- S2 LOGO 墙 -->
+  <div class="blk">
+    <span class="tag">S2 · 客户 LOGO 墙<em>精选 12 个 · 灰度 · 角标数量信任状</em></span>
+    <div class="row" style="margin-bottom:12px">
+      <span class="chip">60+ 商业化客户</span>
+      <span class="chip">40+ 商业化案例</span>
+      <a class="btnw ghost" style="margin-left:auto;padding:5px 14px;font-size:11.5px">展开全部 Logo 墙<i>BTN</i></a>
+    </div>
+    <div class="logos">
+      <div class="ph small">奔驰</div><div class="ph small">抖音</div><div class="ph small">美团</div><div class="ph small">特斯拉</div><div class="ph small">奥妙</div><div class="ph small">华为</div>
+      <div class="ph small">王者荣耀</div><div class="ph small">金典</div><div class="ph small">腾讯视频</div><div class="ph small">原神</div><div class="ph small">故宫博物院</div><div class="ph small">传音</div>
+    </div>
+  </div>
+
+  <!-- S3 定位区（浅底） -->
+  <div class="blk light">
+    <span class="tag">S3 · 一句话定位区<em>全站唯一浅底「换气」区</em></span>
+    <div class="h-lg">用 AI 重构内容生产方式，赋能 IP 商业化</div>
+    <p class="body" style="margin-top:8px">8 年影视广告经验 · 自研 AI + 实拍双引擎：COSMOS TECH（虚拟拍摄）／ COSMOS LAB（AIGC Agent）</p>
+  </div>
+
+  <!-- S4 AI 影视轮播 -->
+  <div class="blk">
+    <span class="tag">S4 · 业务轮播 ① AI 影视<em>横滑 4 卡 · 点击进案例详情</em></span>
+    <div class="cards">
+      <div class="ccard"><div class="ph">封面占位<br>万花世界剧照</div><b>万花世界</b><span class="lbl">鞠婧祎 × 恒星引力 × 腾讯视频 · 国内首部 AI+实拍剧集</span><span><span class="chip ai">AI 影视</span></span></div>
+      <div class="ccard"><div class="ph">封面占位<br>凡人修仙传剧照</div><b>凡人修仙传</b><span class="lbl">万维猫动画 · IP 资产开发 + 商业化</span><span><span class="chip ai">IP</span></span></div>
+      <div class="ccard"><div class="ph">封面占位<br>院线电影氛围图</div><b>长生天</b><span class="lbl">院线电影 · 保密项目</span><span><span class="chip ai">AI 影视</span> <span class="chip tbd">2026</span></span></div>
+      <div class="ccard"><div class="ph">封面占位<br>DREAMLESS 剧照</div><b>无梦者 DREAMLESS</b><span class="lbl">自有 AI 电影 · 蔺宇涵 LIN 导演</span><span><span class="chip new">自有 IP</span></span></div>
+    </div>
+  </div>
+
+  <!-- S5 商业广告轮播 -->
+  <div class="blk">
+    <span class="tag">S5 · 业务轮播 ② 商业广告<em>结构与 S4 完全复用 · 节奏对称</em></span>
+    <div class="cards">
+      <div class="ccard"><div class="ph">封面占位</div><b>美团外卖 × 李诞《蛋的旅行》</b><span class="lbl">创意短片 · AIGC 主导</span><span><span class="chip ai">AIGC 主导</span></span></div>
+      <div class="ccard"><div class="ph">封面占位</div><b>TECNO CAMON 50 × 张艺兴</b><span class="lbl">出海 TVC · 传音</span><span><span class="chip ai">AIGC 主导</span></span></div>
+      <div class="ccard"><div class="ph">封面占位</div><b>特斯拉 Model S 概念片</b><span class="lbl">汽车 · 概念视觉</span><span><span class="chip ai">AIGC 主导</span></span></div>
+      <div class="ccard"><div class="ph">封面占位</div><b>奥妙 × 樊振东 TVC</b><span class="lbl">快消 · 联合利华</span><span><span class="chip">实拍 + AI</span></span></div>
+    </div>
+  </div>
+
+  <!-- S6 理念长文 -->
+  <div class="blk ethos">
+    <span class="tag">S6 · 理念长文 our ethos<em>全站唯一「讲道理」处 · 文案已按 PDF P4/P11 融合</em></span>
+    <div class="h-lg">像拍电影那样拍广告</div>
+    <p>我们花了 <b>8 年</b>时间，在影视广告工业里打磨每一帧——从创意、分镜、拍摄到后期，像拍电影那样对待每一条广告。</p>
+    <p>现在，我们把这套工业流程拆解、封装成可复用的 AI 生产管线：<b>COSMOS TECH</b> 负责 AI 与实拍的融合拍摄，<b>COSMOS LAB</b> 负责自研 AIGC Agent 的模型能力。</p>
+    <p>所以我们相信：<b>AIGC 是过程，IP 才是结果。</b></p>
+  </div>
+
+  <!-- S7 服务能力四联 -->
+  <div class="blk">
+    <span class="tag">S7 · 四大业务版图<em>01–04 · 与作品页四个分类一一对应</em></span>
+    <div class="quad">
+      <div class="qcell"><span class="no">01</span><div class="ph">循环短视频占位<br>虚拟拍摄流程</div><b>AI 影视</b><span class="lbl">AI+实拍剧集与院线电影，影视级 AI 交付</span><a class="btnw ghost" style="padding:5px 12px;font-size:11px;align-self:flex-start">看作品<i>BTN</i></a></div>
+      <div class="qcell"><span class="no">02</span><div class="ph">循环短视频占位</div><b>IP</b><span class="lbl">头部 IP 资产开发与商业化，让好故事长出商业价值</span><a class="btnw ghost" style="padding:5px 12px;font-size:11px;align-self:flex-start">看作品<i>BTN</i></a></div>
+      <div class="qcell"><span class="no">03</span><div class="ph">循环短视频占位</div><b>商业广告</b><span class="lbl">从 TVC 到虚拟人，品牌内容的 AI 升级</span><a class="btnw ghost" style="padding:5px 12px;font-size:11px;align-self:flex-start">看作品<i>BTN</i></a></div>
+      <div class="qcell"><span class="no">04</span><div class="ph">循环短视频占位</div><b>自有 IP</b><span class="lbl">自研 AI 电影、剧集与虚拟偶像，从过程到结果</span><a class="btnw ghost" style="padding:5px 12px;font-size:11px;align-self:flex-start">看作品<i>BTN</i></a></div>
+    </div>
+  </div>
+
+  <!-- S8 宣言 -->
+  <div class="blk mantra">
+    <span class="tag" style="justify-content:center;width:100%">S8 · 品牌态度宣言<em>居中 ®</em></span>
+    <div class="h-xl" data-zh="以 AI 赴万象，自在逛与宙®" data-en="All realms. One AI. Roam free.®">以 AI 赴万象，自在逛与宙®</div>
+  </div>
+
+  <!-- S9 数字 -->
+  <div class="blk">
+    <span class="tag">S9 · 奖项数字<em>数量即信任状 · 5 行递进</em></span>
+    <div class="nums">
+      <div class="num"><b>8 年</b><span>影视广告经验</span></div>
+      <div class="num"><b>60+</b><span>商业化客户</span></div>
+      <div class="num"><b>40+</b><span>商业化案例</span></div>
+      <div class="num"><b>×5</b><span>独家签约 AIGC 导演</span></div>
+      <div class="num"><b>425万+</b><span>自媒体播放</span></div>
+    </div>
+  </div>
+
+  <!-- S10 导演墙 -->
+  <div class="blk">
+    <span class="tag">S10 · 签约导演墙<em>📍 位置提案：S9 之后（备选：S6 之前）· 肖像待授权，本版用占位</em></span>
+    <div class="row" style="margin-bottom:14px">
+      <div class="h-lg">独家签约 AIGC 导演</div>
+      <a class="btnw ghost" style="margin-left:auto;padding:5px 14px;font-size:11.5px">查看全部 + 履历<i>BTN</i></a>
+    </div>
+    <div class="dirs">
+      <div class="dir"><div class="ph">肖像占位<br>待授权</div><div class="d"><b>林宇昂</b><span class="lbl">北京电影学院导演系<br>《凡人修仙传》1–34 季</span></div></div>
+      <div class="dir"><div class="ph">肖像占位<br>待授权</div><div class="d"><b>蔺宇涵 LIN</b><span class="lbl">导演<br>《无梦者》《非相之界》</span></div></div>
+      <div class="dir"><div class="ph">肖像占位<br>待授权</div><div class="d"><b>崔艺涵</b><span class="lbl">导演<br>《万花世界》AIGC 先导片</span></div></div>
+      <div class="dir"><div class="ph">肖像占位<br>待授权</div><div class="d"><b>钟俊杰</b><span class="lbl">导演<br>服务美团 / 传音 / 海信</span></div></div>
+      <div class="dir"><div class="ph">肖像占位<br>待授权</div><div class="d"><b>林思琪</b><span class="lbl">编剧<br>中央戏剧学院</span></div></div>
+    </div>
+  </div>
+
+  <!-- S11 履历 + 时间线 -->
+  <div class="blk press">
+    <span class="tag">S11 · 履历背书 + 近期动态<em>氛围底图 28% · 时间线只写时间+一句话</em></span>
+    <div class="row">
+      <div class="ph small grow">央视 CCTV13 等媒体报道 · 北京市科委引进 · 火山引擎 Seedance 战略合作</div>
+    </div>
+    <div class="tl">
+      <div class="qcell"><span class="no">2026 Q2</span><b>《万花世界》上线</b><span class="lbl">腾讯视频 S+ 剧集 · 国内首部 AI+实拍 · 同步发起 AIGC 共创计划</span></div>
+      <div class="qcell"><span class="no">2026 Q3</span><b>院线电影 · 保密项目</b><span class="lbl">与头部导演团队筹备中</span></div>
+      <div class="qcell"><span class="no">2026 Q4</span><b>平台 S+ 级剧集 · 保密</b><span class="lbl">超级 IP 影视化 · 首次应用「传统组 ∥ AI 组」平行工作模式</span></div>
+      <div class="qcell"><span class="no">2027 Q1</span><b>自有 IP 出海</b><span class="lbl">自有 IP 剧集上线海内外主流平台</span></div>
+    </div>
+  </div>
+
+  <!-- S12 CTA -->
+  <div class="blk cta">
+    <span class="tag" style="justify-content:center;width:100%">S12 · 结尾 CTA<em>满屏氛围图 40% · 内容居中</em></span>
+    <div class="ph" style="width:100%;min-height:120px;margin-bottom:8px">氛围图占位（满屏 40% 高度）</div>
+    <div class="h-lg" data-zh="有一个想法？聊聊。" data-en="Got an idea? Let's talk.">有一个想法？聊聊。</div>
+    <a class="btnw">发起合作 →<i>BTN</i></a>
+    <span class="lbl">联系邮箱占位 · 待客户提供（PDF 文字乱码未确认）</span>
+  </div>
+
+  <footer class="wfoot"><span>© COSMOS AI · Guangyuzhou Technology Co., Ltd.</span><span>导航占位：首页 / 作品 / 联系 + 中·EN 切换</span></footer>
+</section>
+
+<!-- ================================================== 作品列表 -->
+<section class="sheet" id="pg-works">
+  <div class="blk phead">
+    <span class="tag">W1 · 页头<em>超大字 · 无简介</em></span>
+    <div class="crumb">Works · 全部作品</div>
+    <div class="h-xl" data-zh="作品" data-en="Works">作品</div>
+    <div class="row" style="margin-top:10px"><span class="chip">13+ 精选案例 · 持续更新</span></div>
+  </div>
+
+  <div class="blk">
+    <span class="tag">W2 · 分类筛选<em>客户确认的四大分类 + 全部 · 点击筛选即本交互</em></span>
+    <div class="ftabs" id="ftabs">
+      <button class="ftab on" data-cat="all">全部 <small>20</small></button>
+      <button class="ftab" data-cat="film">AI 影视 <small>3</small></button>
+      <button class="ftab" data-cat="ip">IP <small>1+</small></button>
+      <button class="ftab" data-cat="ad">商业广告 <small>13</small></button>
+      <button class="ftab" data-cat="own">自有 IP <small>3</small></button>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <span class="lbl">商业广告二级筛选：</span>
+      <button class="ftab on" style="padding:5px 12px;font-size:11px">全部</button>
+      <button class="ftab" style="padding:5px 12px;font-size:11px">AIGC 主导</button>
+      <button class="ftab" style="padding:5px 12px;font-size:11px">实拍 + AI</button>
+      <span class="lbl" style="margin-left:auto">行业：互联网 / 出海 / 汽车 / 快消 / 科技 / 游戏</span>
+    </div>
+  </div>
+
+  <div class="blk">
+    <span class="tag">W3 · 案例网格<em>3 列 · 卡片 = 封面 + 标题 + 客户 + 标签 · 点击进详情</em></span>
+    <div class="wgrid" id="wgrid">
+      <!-- AI 影视 -->
+      <div class="wcard" data-cat="film"><div class="ph">封面占位 · 万花世界</div><div class="w"><b>万花世界</b><span class="lbl">鞠婧祎 × 恒星引力 × 腾讯视频</span><div class="chips"><span class="chip ai">AI 影视</span><span class="chip">剧集</span></div></div></div>
+      <div class="wcard" data-cat="film"><div class="ph">封面占位 · 氛围图</div><div class="w"><b>长生天</b><span class="lbl">院线电影 · 保密项目</span><div class="chips"><span class="chip ai">AI 影视</span><span class="chip tbd">2026</span></div></div></div>
+      <div class="wcard" data-cat="film"><div class="ph">封面占位</div><div class="w"><b>优酷 S+ 级剧集</b><span class="lbl">超级 IP 影视化 · 保密项目</span><div class="chips"><span class="chip ai">AI 影视</span><span class="chip tbd">2026Q4</span></div></div></div>
+      <!-- IP -->
+      <div class="wcard" data-cat="ip"><div class="ph">封面占位 · 凡人修仙传</div><div class="w"><b>凡人修仙传 · IP 资产开发</b><span class="lbl">万维猫动画 · COSMOS LAB 垂类 Agent</span><div class="chips"><span class="chip ai">IP</span><span class="chip">65.8 亿播放</span></div></div></div>
+      <div class="wcard" data-cat="ip"><div class="ph">封面占位 · 预留</div><div class="w"><b>更多 IP 合作案例</b><span class="lbl">持续更新中</span><div class="chips"><span class="chip tbd">占位</span></div></div></div>
+      <!-- 商业广告 -->
+      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>美团外卖 × 李诞《蛋的旅行》</b><span class="lbl">创意短片 · 美团</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">互联网</span></div></div></div>
+      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>美团虚拟人 · 首部 MV</b><span class="lbl">虚拟人打造 · 美团</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">互联网</span></div></div></div>
+      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>美团外卖 × 故宫博物院 · 七夕</b><span class="lbl">天生成双 · 美团</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">互联网</span></div></div></div>
+      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>美团外卖 · 世界杯热点篇</b><span class="lbl">热点营销 · 美团</span><div class="chips"><span class="chip">商业广告</span><span class="chip">实拍 + AI</span><span class="chip">互联网</span></div></div></div>
+      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>TECNO CAMON 50 × 张艺兴</b><span class="lbl">出海 TVC · 传音</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">出海</span></div></div></div>
+      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>传音海外产品 TVC</b><span class="lbl">出海 · 传音</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">出海</span></div></div></div>
+      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>特斯拉 Model S 概念片</b><span class="lbl">概念视觉 · 特斯拉</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">汽车</span></div></div></div>
+      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>特斯拉 Model S 城市功能片</b><span class="lbl">功能演示 · 特斯拉</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">汽车</span></div></div></div>
+      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>奥妙 × 吴磊 TVC</b><span class="lbl">快消 · 联合利华</span><div class="chips"><span class="chip">商业广告</span><span class="chip">实拍 + AI</span><span class="chip">快消</span></div></div></div>
+      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>奥妙 × 樊振东 TVC</b><span class="lbl">快消 · 联合利华</span><div class="chips"><span class="chip">商业广告</span><span class="chip">实拍 + AI</span><span class="chip">快消</span></div></div></div>
+      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>伊利金典有机奶</b><span class="lbl">呼伦贝尔草原牧场篇</span><div class="chips"><span class="chip">商业广告</span><span class="chip">实拍 + AI</span><span class="chip">快消</span></div></div></div>
+      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>木九十产品 TVC</b><span class="lbl">眼镜品牌 · 木九十</span><div class="chips"><span class="chip">商业广告</span><span class="chip">实拍 + AI</span><span class="chip">科技</span></div></div></div>
+      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>易森动力 Ethan Global</b><span class="lbl">品牌视觉 · 易森动力</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">科技</span></div></div></div>
+      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>王者荣耀 · 角色亮相片</b><span class="lbl">游戏 · 腾讯游戏</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">游戏</span></div></div></div>
+      <div class="wcard" data-cat="ad"><div class="ph">封面占位</div><div class="w"><b>原神 · 品牌影片</b><span class="lbl">游戏 · 米哈游</span><div class="chips"><span class="chip">商业广告</span><span class="chip ai">AIGC 主导</span><span class="chip">游戏</span></div></div></div>
+      <!-- 自有 IP -->
+      <div class="wcard" data-cat="own"><div class="ph">封面占位 · DREAMLESS</div><div class="w"><b>无梦者 DREAMLESS</b><span class="lbl">自有 AI 电影 · 蔺宇涵 LIN</span><div class="chips"><span class="chip new">自有 IP</span></div></div></div>
+      <div class="wcard" data-cat="own"><div class="ph">封面占位</div><div class="w"><b>非相之界</b><span class="lbl">自有 AI 剧集 · 蔺宇涵 LIN</span><div class="chips"><span class="chip new">自有 IP</span></div></div></div>
+      <div class="wcard" data-cat="own"><div class="ph">封面占位</div><div class="w"><b>ZORA</b><span class="lbl">AI 虚拟偶像 · 逛与宙自研</span><div class="chips"><span class="chip new">自有 IP</span></div></div></div>
+    </div>
+  </div>
+
+  <div class="blk cta">
+    <span class="tag" style="justify-content:center;width:100%">W4 · 页尾 CTA<em>与首页 S12 同款</em></span>
+    <div class="h-lg" data-zh="有一个想法？聊聊。" data-en="Got an idea? Let's talk.">有一个想法？聊聊。</div>
+    <a class="btnw">发起合作 →<i>BTN</i></a>
+  </div>
+  <footer class="wfoot"><span>© COSMOS AI · Guangyuzhou Technology Co., Ltd.</span><span>导航占位：首页 / 作品 / 联系 + 中·EN 切换</span></footer>
+</section>
+
+<!-- ================================================== 案例详情 -->
+<section class="sheet" id="pg-detail">
+  <div class="blk phead">
+    <span class="tag">P1 · 分类 + 大标题<em>样板案例：《万花世界》· 其余案例同版式</em></span>
+    <div class="crumb">Works · AI 影视</div>
+    <div class="h-xl">万花世界</div>
+    <div class="row" style="margin-top:12px">
+      <span class="ph small" style="min-height:34px;padding:6px 14px;width:auto">客户 LOGO 占位 · 恒星引力</span>
+      <span class="ph small" style="min-height:34px;padding:6px 14px;width:auto">平台 LOGO 占位 · 腾讯视频</span>
+      <span class="lbl" style="align-self:center">联合署名：鞠婧祎 × 恒星引力 × 腾讯视频 × 逛与宙</span>
+    </div>
+  </div>
+
+  <div class="blk">
+    <span class="tag">P2 · 横幅主视觉<em>16:9 · 中央播放钮 · 正片/先导片</em></span>
+    <div class="ph" style="aspect-ratio:16/9;min-height:0;font-size:13px">视频封面占位 · 《万花世界》先导片<br>▶ 播放钮（点击开灯全屏播放）</div>
+  </div>
+
+  <div class="blk">
+    <span class="tag">P3 · 项目参数表<em>6 格 + 成绩条 · 数据取自 PDF P6</em></span>
+    <div class="param">
+      <div class="pcell"><span>客户 CLIENT</span><b>恒星引力</b></div>
+      <div class="pcell"><span>平台 PLATFORM</span><b>腾讯视频 S+</b></div>
+      <div class="pcell"><span>类型 TYPE</span><b>AI+实拍剧集</b></div>
+      <div class="pcell"><span>年份 YEAR</span><b>2026</b></div>
+      <div class="pcell"><span>导演 DIRECTOR</span><b>崔艺涵（AIGC 先导片）</b></div>
+      <div class="pcell"><span>技术 STACK</span><b>COSMOS TECH</b></div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <span class="chip">IP 评分 9.8</span><span class="chip">人气 390.6 亿</span><span class="chip">预约 111 万</span><span class="chip">国内首部 AI+实拍剧集</span>
+    </div>
+  </div>
+
+  <div class="blk">
+    <span class="tag">P4 · About the project<em>需求 → 挑战 → 做法 三段叙事 · 样板文案已填充</em></span>
+    <div class="p4grid">
+      <div class="col"><b class="t">① 背景与需求</b><p>IP《万渣朝凰》人气 390.6 亿、评分 9.8，影视化改编万众期待。恒星引力与腾讯视频希望打造国内首部 AI+实拍融合剧集——在控制成本与周期的前提下，达到院线级视觉水准。</p></div>
+      <div class="col"><b class="t">② 挑战</b><p>世界观宏大、传统实拍成本极高；「AI 感」与「演员表演」必须无缝融合，任何违和都会损伤顶流 IP 的口碑基本盘。</p></div>
+      <div class="col"><b class="t">③ 我们的做法</b><p>以 COSMOS TECH 虚拟拍摄流程介入：AIGC 生成世界观素材 → 演员虚拟拍摄 → AI 融合实拍成片；先导片由签约导演崔艺涵执导，确立全剧视觉基准。</p></div>
+    </div>
+    <div class="row" style="margin-top:12px"><span class="chip">结果：先导片上线后平台预约破 111 万</span></div>
+  </div>
+
+  <div class="blk">
+    <span class="tag">P4b · 过程稿条带<em>新增板块 · 四格对比 · 素材待客户提供，本版占位</em></span>
+    <div class="proc">
+      <div class="ph">① 分镜草图占位</div>
+      <div class="ph">② AIGC 生成帧占位</div>
+      <div class="ph">③ 虚拟拍摄现场占位</div>
+      <div class="ph">④ 最终画面占位</div>
+    </div>
+    <div class="lbl" style="margin-top:8px">每案配一句话过程说明（客户提供"一句话需求 + 三句过程"后填充）</div>
+  </div>
+
+  <div class="blk">
+    <span class="tag">P5 · Credits<em>给每个人署名</em></span>
+    <div class="credits">
+      <div><b>AIGC 导演</b> · 崔艺涵</div>
+      <div><b>出品</b> · 恒星引力 / 腾讯影业</div>
+      <div><b>主演</b> · 鞠婧祎</div>
+      <div><b>AI 技术</b> · COSMOS LAB</div>
+      <div><b>虚拟拍摄</b> · COSMOS TECH</div>
+      <div><b>制作</b> · 逛与宙 AI</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <span class="tag">P6 · 下一案例卡<em>全宽 · 连续看的核心动线 · 优先推同分类</em></span>
+    <div class="nextcase">
+      <div class="ph">封面占位 · 凡人修仙传</div>
+      <div class="w">
+        <span class="kicker">Next · 同属 IP</span>
+        <b style="font-size:18px">凡人修仙传 · IP 资产开发</b>
+        <span class="lbl">万维猫动画 · 65.8 亿播放 · 全网热搜 65 个</span>
+        <a class="btnw" style="align-self:flex-start;margin-top:6px">查看案例 →<i>BTN</i></a>
+      </div>
+    </div>
+  </div>
+  <footer class="wfoot"><span>© COSMOS AI · Guangyuzhou Technology Co., Ltd.</span><span>导航占位：首页 / 作品 / 联系 + 中·EN 切换</span></footer>
+</section>
+
+<!-- ================================================== 联系 -->
+<section class="sheet" id="pg-contact">
+  <div class="blk phead">
+    <span class="tag">C1 · 联系<em>字段极少 = 低提交门槛</em></span>
+    <div class="crumb">Contact · 联系</div>
+    <div class="h-xl" data-zh="聊聊。" data-en="Let's talk.">聊聊。</div>
+    <p class="body" style="margin-top:8px">品牌 AI 广告 / AI 影视 / IP / 自有 IP 合作，或任何关于 AI 内容的脑洞，都可以从这一句话开始。</p>
+  </div>
+
+  <div class="blk">
+    <span class="tag">C2 · 表单 + 直连方式<em>左表单右直连 · 邮箱/二维码待客户提供</em></span>
+    <div class="cgrid">
+      <div>
+        <div class="field">您的称呼（必填）<i>INPUT</i></div>
+        <div class="field">公司 / 品牌<i>INPUT</i></div>
+        <div class="field">想聊什么？一句话即可（必填）<i>TEXTAREA</i></div>
+        <div class="field">邮箱或微信（必填）<i>INPUT</i></div>
+        <a class="btnw">发送 →<i>BTN · SUBMIT</i></a>
+        <div class="lbl" style="margin-top:10px">提交后由邮箱转发至商务邮箱 · 表单后端待接入</div>
+      </div>
+      <div>
+        <div class="field">商务邮箱 · 待客户提供（PDF 文字乱码未确认）<i class="opt">TBD</i></div>
+        <div class="ph small" style="margin-bottom:10px">微信二维码占位 · 待客户提供</div>
+        <div class="field">公司地址（中 / EN）· 待客户提供<i class="opt">TBD</i></div>
+        <div class="field">自媒体矩阵入口 · 抖音 / 小红书 / Bilibili<i class="opt">OPT</i></div>
+      </div>
+    </div>
+  </div>
+  <footer class="wfoot"><span>© COSMOS AI · Guangyuzhou Technology Co., Ltd.</span><span>导航占位：首页 / 作品 / 联系 + 中·EN 切换</span></footer>
+</section>
+
+</div><!-- /frame -->
+</div><!-- /stage -->
+
+<script>
+  // 页面切换
+  var pgs=document.querySelectorAll('#pageGrp button'),sheets=document.querySelectorAll('.sheet');
+  pgs.forEach(function(b){b.addEventListener('click',function(){
+    pgs.forEach(function(x){x.classList.remove('on')});b.classList.add('on');
+    sheets.forEach(function(s){s.classList.remove('on')});
+    document.getElementById('pg-'+b.dataset.page).classList.add('on');
+    window.scrollTo({top:0});
+  })});
+  // 视口切换
+  var vps=document.querySelectorAll('#vpGrp button'),frame=document.getElementById('frame');
+  vps.forEach(function(b){b.addEventListener('click',function(){
+    vps.forEach(function(x){x.classList.remove('on')});b.classList.add('on');
+    frame.classList.toggle('mob',b.dataset.vp==='m');
+  })});
+  // 语言切换（仅切换标注了 data-zh / data-en 的关键文案，演示机制）
+  var langs=document.querySelectorAll('#langGrp button');
+  langs.forEach(function(b){b.addEventListener('click',function(){
+    langs.forEach(function(x){x.classList.remove('on')});b.classList.add('on');
+    var en=b.dataset.lang==='en';
+    document.querySelectorAll('[data-zh]').forEach(function(el){
+      el.textContent=en?el.dataset.en:el.dataset.zh;
+    });
+  })});
+  // 作品筛选
+  var ftabs=document.querySelectorAll('#ftabs .ftab'),wcards=document.querySelectorAll('#wgrid .wcard');
+  ftabs.forEach(function(t){t.addEventListener('click',function(){
+    ftabs.forEach(function(x){x.classList.remove('on')});t.classList.add('on');
+    var c=t.dataset.cat;
+    wcards.forEach(function(w){w.style.display=(c==='all'||w.dataset.cat===c)?'flex':'none'});
+  })});
+</script>
+</body>
+</html>
