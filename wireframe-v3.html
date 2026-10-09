@@ -207,6 +207,9 @@
 
   footer.wfoot{border-top:1px solid var(--line);padding:16px 28px;display:flex;justify-content:space-between;gap:10px;font-size:11px;color:var(--mut);flex-wrap:wrap}
 
+  /* ===== 文本换行平衡：避免末行悬字 ===== */
+  .h-xl,.h-lg,.gh,.gtitle,.gcap,.lbl,.body,.ethos p,.qcell b,.ccard b,.kicker,.ccard .lbl,.num span,.step .lbl{text-wrap:balance}
+
   /* ===== 正式站点导航 ===== */
   .sitenav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 28px;border-bottom:1px solid var(--line);background:var(--blk);position:sticky;top:0;z-index:50}
   .sitenav .sn-brand b{font-size:15px;font-weight:800}
@@ -346,14 +349,14 @@
       <span class="lbl" style="align-self:center">行业：互联网 / 出海 / 汽车 / 快消 / 科技 / 游戏</span>
     </div>
     <div class="ggrid">
-      <div class="gcard" data-tags="ai"><div class="gmedia">封面图</div><div class="gtitle">《蛋的旅行》</div><div class="gcap">创意短片 · 美团 × 李诞 · AIGC 主导</div></div>
+      <div class="gcard" data-tags="ai"><div class="gmedia">封面图</div><div class="gtitle">《蛋的旅行》</div><div class="gcap">美团 × 李诞 · 创意短片</div></div>
       <div class="gcard" data-tags="ai"><div class="gmedia">封面图</div><div class="gtitle">美团虚拟人 · 首部 MV</div><div class="gcap">虚拟人打造 · 美团 · AIGC 主导</div></div>
       <div class="gcard" data-tags="ai"><div class="gmedia">封面图</div><div class="gtitle">美团 × 故宫博物院 · 七夕</div><div class="gcap">天生成双 · 美团 · AIGC 主导</div></div>
       <div class="gcard" data-tags="real"><div class="gmedia">封面图</div><div class="gtitle">美团外卖 · 世界杯热点篇</div><div class="gcap">热点营销 · 美团 · 实拍 + AI</div></div>
-      <div class="gcard" data-tags="ai"><div class="gmedia">封面图</div><div class="gtitle">TECNO CAMON 50</div><div class="gcap">出海 TVC · 传音 × 张艺兴 · AIGC 主导</div></div>
+      <div class="gcard" data-tags="ai"><div class="gmedia">封面图</div><div class="gtitle">TECNO CAMON 50</div><div class="gcap">传音 × 张艺兴 · 出海 TVC</div></div>
       <div class="gcard" data-tags="ai"><div class="gmedia">封面图</div><div class="gtitle">传音海外产品 TVC</div><div class="gcap">出海 · 传音 · AIGC 主导</div></div>
       <div class="gcard" data-tags="ai"><div class="gmedia">封面图</div><div class="gtitle">特斯拉 Model S 概念片</div><div class="gcap">概念视觉 · 特斯拉 · AIGC 主导</div></div>
-      <div class="gcard" data-tags="ai"><div class="gmedia">封面图</div><div class="gtitle">特斯拉 Model S 城市功能片</div><div class="gcap">功能演示 · 特斯拉 · AIGC 主导</div></div>
+      <div class="gcard" data-tags="ai"><div class="gmedia">封面图</div><div class="gtitle">Model S 城市功能片</div><div class="gcap">功能演示 · 特斯拉 · AIGC 主导</div></div>
       <div class="gcard" data-tags="real"><div class="gmedia">封面图</div><div class="gtitle">奥妙 × 吴磊 TVC</div><div class="gcap">快消 · 联合利华 · 实拍 + AI</div></div>
       <div class="gcard" data-tags="real"><div class="gmedia">封面图</div><div class="gtitle">奥妙 × 樊振东 TVC</div><div class="gcap">快消 · 联合利华 · 实拍 + AI</div></div>
       <div class="gcard" data-tags="real"><div class="gmedia">封面图</div><div class="gtitle">伊利金典有机奶</div><div class="gcap">草原牧场篇 · 实拍 + AI</div></div>
@@ -368,7 +371,7 @@
   <div class="blk ethos">
     
     <div class="h-lg">像拍电影那样拍广告</div>
-    <p>我们花了 <b>8 年</b>时间，在影视广告工业里打磨每一帧——从创意、分镜、拍摄到后期，像拍电影那样对待每一条广告。</p>
+    <p>我们花了 <b>8 年</b>时间，在影视广告工业里打磨每一帧——<br>从创意、分镜、拍摄到后期，<br>像拍电影那样对待每一条广告。</p>
     <p>现在，我们把这套工业流程拆解、封装成可复用的 AI 生产管线：<b>COSMOS TECH</b> 负责 AI 与实拍的融合拍摄，<b>COSMOS LAB</b> 负责自研 AIGC Agent 的模型能力。</p>
     <p>所以我们相信：<b>AIGC 是过程，IP 才是结果。</b></p>
   </div>
@@ -428,7 +431,7 @@
       <div class="qcell"><span class="no">2026 Q2</span><b>《万花世界》上线</b><span class="lbl">腾讯视频 S+ 剧集 · 国内首部 AI+实拍 · 同步发起 AIGC 共创计划</span></div>
       <div class="qcell"><span class="no">2026 Q3</span><b>院线电影 · 保密项目</b><span class="lbl">与头部导演团队筹备中</span></div>
       <div class="qcell"><span class="no">2026 Q4</span><b>保密 S+ 级剧集</b><span class="lbl">超级 IP 影视化<br>传统组与 AI 组平行制作</span></div>
-      <div class="qcell"><span class="no">2027 Q1</span><b>自有 IP 出海</b><span class="lbl">自有 IP 剧集上线海内外主流平台</span></div>
+      <div class="qcell"><span class="no">2027 Q1</span><b>自有 IP 出海</b><span class="lbl">自有 IP 剧集上线海内外平台</span></div>
     </div>
   </div>
 
@@ -654,9 +657,9 @@
   <div class="blk">
     
     <div class="steps">
-      <div class="step"><span class="no">STEP 1</span><div class="ph">流程示意 · AIGC 素材生成</div><b>AIGC 素材生成</b><span class="lbl">世界观、场景、氛围资产由 AIGC 批量生成，先有"想象"，再谈拍摄。</span></div>
+      <div class="step"><span class="no">STEP 1</span><div class="ph">流程示意 · AIGC 素材生成</div><b>AIGC 素材生成</b><span class="lbl">世界观、场景、氛围资产由 AIGC 批量生成<br>先有"想象"，再谈拍摄。</span></div>
       <div class="step"><span class="no">STEP 2</span><div class="ph">流程示意 · 演员虚拟拍摄</div><b>演员虚拟拍摄</b><span class="lbl">演员在虚拟场景中表演，实拍与生成资产实时对齐。</span></div>
-      <div class="step"><span class="no">STEP 3</span><div class="ph">流程示意 · AI 融合实拍</div><b>AI 融合实拍</b><span class="lbl">AI 完成融合、润色与统一质感——观众看到的是电影，不是"AI 味"。</span></div>
+      <div class="step"><span class="no">STEP 3</span><div class="ph">流程示意 · AI 融合实拍</div><b>AI 融合实拍</b><span class="lbl">AI 完成融合、润色与统一质感——<br>观众看到的是电影，不是"AI 味"。</span></div>
     </div>
     <div class="lbl" style="margin-top:10px">一句话主张：像拍电影那样拍广告——8 年影视工业的封装。</div>
   </div>
@@ -664,7 +667,7 @@
   <div class="blk">
     
     <div class="stack">
-      <div class="qcell"><span class="no">MODEL 01</span><div class="ph">技术架构图</div><b>模型一 · 角色一致性</b><span class="lbl">跨镜头、跨季度的人物稳定</span></div>
+      <div class="qcell"><span class="no">MODEL 01</span><div class="ph">技术架构图</div><b>模型一 · 角色一致性</b><span class="lbl">跨镜头、跨季度人物一致</span></div>
       <div class="qcell"><span class="no">MODEL 02</span><div class="ph">技术架构图</div><b>模型二 · 场景生成</b><span class="lbl">世界观视觉库批量产出</span></div>
       <div class="qcell"><span class="no">MODEL 03</span><div class="ph">技术架构图</div><b>模型三 · 动作驱动</b><span class="lbl">表演捕捉与生成对齐</span></div>
       <div class="qcell"><span class="no">MODEL 04</span><div class="ph">技术架构图</div><b>模型四 · 质感统一</b><span class="lbl">电影级调色与风格迁移</span></div>
@@ -693,11 +696,11 @@
 
   <div class="blk">
     
-    <div class="nums" style="grid-template-columns:repeat(4,1fr)">
+    <div class="nums" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
       <div class="num"><b>425万+</b><span>自媒体播放</span></div>
       <div class="num"><b>32万</b><span>点赞</span></div>
       <div class="num"><b>7万</b><span>评论</span></div>
-      <div class="num"><b>TOP49</b><span>抖音娱乐榜 · 挑战榜 TOP17</span></div>
+      <div class="num"><b>TOP49</b><span>抖音娱乐榜／挑战榜</span></div>
     </div>
   </div>
 
